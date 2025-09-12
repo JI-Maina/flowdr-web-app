@@ -61,7 +61,9 @@ export const AdminSidebar = memo(() => {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Flowdr</span>
-                  <span className="truncate text-xs">Admin Panel</span>
+                  <span className="truncate text-xs">
+                    Your Business in Flow
+                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>
