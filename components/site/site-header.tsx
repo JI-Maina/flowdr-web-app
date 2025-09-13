@@ -62,13 +62,13 @@ const SiteHeader = () => {
 
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit lg:border-l lg:pl-6">
                 <Button asChild variant="outline" size="sm">
-                  <Link href="#">
+                  <Link href="/auth/login">
                     <span>Login</span>
                   </Link>
                 </Button>
                 <Button asChild size="sm">
-                  <Link href="#">
-                    <span>Login</span>
+                  <Link href="/auth/register">
+                    <span>Register</span>
                   </Link>
                 </Button>
               </div>

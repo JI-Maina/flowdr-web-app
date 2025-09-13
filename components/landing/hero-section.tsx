@@ -27,7 +27,7 @@ export default function HeroSection() {
             </p>
 
             <Button asChild size="lg">
-              <Link href="#">
+              <Link href="/auth/register">
                 <span className="btn-label">Start Building</span>
               </Link>
             </Button>
