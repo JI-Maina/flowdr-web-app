@@ -1,5 +1,7 @@
+import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Acme, Space_Mono } from "next/font/google";
+
 import "./globals.css";
 
 const acmeSans = Acme({
@@ -30,6 +32,8 @@ export default function RootLayout({
         className={`${acmeSans.variable} ${spaceMono.variable} antialiased`}
       >
         {children}
+
+        <Toaster richColors />
       </body>
     </html>
   );
