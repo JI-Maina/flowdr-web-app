@@ -39,3 +39,20 @@ export interface Category {
   created_at: string;
   updated_at: string;
 }
+
+export interface Product {
+  id: string;
+  company: string;
+  branch: string;
+  category: string;
+  name: string;
+  description: string;
+  image: string | null;
+  price: string;
+  is_price_fixed: boolean;
+  created_by: string;
+  sku_number: string;
+  vat: string | null;
+  created_at: string;
+  updated_at: string;
+}
