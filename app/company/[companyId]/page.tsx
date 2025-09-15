@@ -8,6 +8,7 @@ import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { SystemStatus } from "@/components/dashboard/system-status";
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { useFlowdrStore } from "@/store/store";
 
 // Dashboard stats data
 const stats = [
@@ -57,6 +58,9 @@ const DashboardPage = () => {
   const handleAddUser = () => {
     console.log("Adding new user...");
   };
+
+  const user = useFlowdrStore((state) => state.store.user);
+  console.log(user);
 
   return (
     <div className="flex flex-1 flex-col gap-2">

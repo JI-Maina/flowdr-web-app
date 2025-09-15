@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 // import { useTheme } from "next-themes";
+import { useFlowdrStore } from "@/store/store";
 import Link from "next/link";
 import {
   Sidebar,
@@ -20,9 +21,9 @@ import {
   LayoutDashboard,
   BarChart3,
   FileText,
+  Database,
   // Users,
   // Activity,
-  // Database,
   // Shield,
   // Zap,
   // Bell,
@@ -33,21 +34,34 @@ import {
 } from "lucide-react";
 import { LogoIcon } from "../logo";
 
-const menuItems = [
-  { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-  { title: "Products", icon: BarChart3, href: "/dashboard/products" },
-  { title: "Orders", icon: FileText, href: "/dashboard/orders" },
-  // { title: "Users", icon: Users, href: "#users" },
-  // { title: "Activity", icon: Activity, href: "#activity" },
-  // { title: "Database", icon: Database, href: "#database" },
-  // { title: "Security", icon: Shield, href: "#security" },
-  // { title: "Performance", icon: Zap, href: "#performance" },
-  // { title: "Notifications", icon: Bell, href: "#notifications" },
-  // { title: "Settings", icon: Settings, href: "#settings" },
-];
-
 export const AdminSidebar = memo(() => {
   // const { theme, setTheme } = useTheme();
+  const companyId = useFlowdrStore((state) => state.store.user.companyId);
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      icon: LayoutDashboard,
+      href: `/company/${companyId}`,
+    },
+    {
+      title: "My Business",
+      icon: Database,
+      href: `/company/${companyId}/companies`,
+    },
+    {
+      title: "Products",
+      icon: BarChart3,
+      href: `/company/${companyId}/products`,
+    },
+    { title: "Orders", icon: FileText, href: `/company/${companyId}/orders` },
+    // { title: "Users", icon: Users, href: "#users" },
+    // { title: "Activity", icon: Activity, href: "#activity" },
+    // { title: "Security", icon: Shield, href: "#security" },
+    // { title: "Performance", icon: Zap, href: "#performance" },
+    // { title: "Notifications", icon: Bell, href: "#notifications" },
+    // { title: "Settings", icon: Settings, href: "#settings" },
+  ];
 
   return (
     <Sidebar collapsible="icon">

@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { loginSchema } from "@/lib/schemas";
+import { useFlowdrStore } from "@/store/store";
 import { loginUser } from "@/actions/auth-action";
 import {
   Form,
@@ -22,22 +23,40 @@ import {
 } from "../ui/form";
 
 const LoginForm = () => {
+  const router = useRouter();
+  const { updateUser } = useFlowdrStore((state) => state);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const router = useRouter();
-
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    const res = await loginUser(values);
+    try {
+      const res = await loginUser(values);
 
-    if (res.error) {
-      toast.error(res.error["detail"]);
-    } else {
-      // const d = await res.json();
-      console.log(res);
-      router.push("/dashboard");
+      if (res.error) {
+        toast.error(res.error["detail"]);
+      } else {
+        const user = {
+          id: res.id,
+          role: res.role,
+          username: res.username,
+          companyId: res.company_id,
+        };
+
+        updateUser(user);
+
+        console.log(res.company_id === null);
+        if (res.company_id === null) {
+          router.push("/company/set-up");
+        } else {
+          router.push(`/company/${res.company_id}`);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed! No internet connection.");
     }
   };
 
