@@ -14,7 +14,9 @@ export default function DashboardLayout({
       <SidebarInset>
         <DashboardHeader />
 
-        <div className="p-2 pt-0 sm:gap-4 sm:p-4">{children}</div>
+        <div className="p-2 pt-0 sm:gap-4 sm:p-4 w-full overflow-x-hidden">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

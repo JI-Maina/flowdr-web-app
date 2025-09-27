@@ -50,3 +50,36 @@ export const loginSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long" })
     .max(20, { message: "Password must be at most 20 characters long" }),
 });
+
+export const categorySchema = z.object({
+  categoryName: z
+    .string()
+    .min(2, { message: "Category name is required" })
+    .max(50, { message: "Category name must be at most 50 characters long" }),
+  productType: z
+    .enum(["product", "service"])
+    .refine((val) => !!val, { message: "Please select a product type" }),
+  branch: z.string().min(1, { message: "Please select a branch" }),
+});
+
+export const productSchema = z.object({
+  branch: z.string().min(1, { message: "Please select a branch" }),
+  category: z.string().min(1, { message: "Please select a category" }),
+  product: z
+    .string()
+    .min(2, { message: "Product name is required" })
+    .max(100, { message: "Product name must be at most 100 characters long" }),
+  skuNumber: z
+    .string()
+    .min(1, { message: "SKU is required" })
+    .max(30, { message: "SKU must be at most 30 characters long" }),
+  price: z
+    .number({ message: "Price must be a number" })
+    .min(1, { message: "Price cannot be less than 1" }),
+  priceType: z
+    .enum(["negotiable", "fixed"])
+    .refine((val) => !!val, { message: "Please select a price type" }),
+  vat: z.string().optional(),
+  description: z.string().optional(),
+  image: z.any().optional(),
+});
