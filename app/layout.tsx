@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Acme, Space_Mono } from "next/font/google";
 
 import "./globals.css";
+import ReactQueryProvider from "@/providers/react-query-provider";
 
 const acmeSans = Acme({
   variable: "--font-sans",
@@ -31,9 +32,11 @@ export default function RootLayout({
       <body
         className={`${acmeSans.variable} ${spaceMono.variable} antialiased`}
       >
-        {children}
+        <ReactQueryProvider>
+          {children}
 
-        <Toaster richColors />
+          <Toaster richColors />
+        </ReactQueryProvider>
       </body>
     </html>
   );

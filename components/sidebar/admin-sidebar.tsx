@@ -58,7 +58,7 @@ export const AdminSidebar = memo(() => {
     {
       title: "Inventory",
       icon: Activity,
-      href: "/company/${companyId}/inventories",
+      href: `/company/${companyId}/inventories`,
     },
     // { title: "Users", icon: Users, href: "#users" },
     // { title: "Security", icon: Shield, href: "#security" },
