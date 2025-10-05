@@ -1,6 +1,7 @@
-import { Branch, Category, Product } from "@/types/flowdr";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+import { Branch, Category, Product } from "@/types/flowdr";
 
 type User = {
   id: string;

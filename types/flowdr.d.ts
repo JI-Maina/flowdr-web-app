@@ -101,3 +101,41 @@ export interface ProductPayload {
   sku_number: string;
   vat: string;
 }
+
+export interface Vendor {
+  id: string;
+  user: User;
+  company: string;
+  first_name: string;
+  last_name: string;
+  vendor_type: string;
+  vendor_company: string;
+  primary_phone: string;
+  secondary_phone: string;
+  website: string;
+  is_active: boolean;
+}
+
+export interface PurchaseOrderItem {
+  id: string;
+  order: string;
+  product: Product;
+  order_quantity: number;
+  delivered_quantity: number;
+  unit_price: string;
+  received_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PurchaseOrder {
+  id: string;
+  vendor: Vendor;
+  ordered_by: User;
+  approved_by: User;
+  status: string;
+  expected_delivery_date: string;
+  total_value: number;
+  notes: string;
+  items: PurchaseOrderItem[];
+}
