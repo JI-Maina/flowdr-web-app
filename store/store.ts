@@ -15,6 +15,7 @@ export type Store = {
   products: Product[];
   categories: Category[];
   branches: Branch[];
+  branchId: string;
 };
 
 export type State = {
@@ -26,6 +27,7 @@ export type Actions = {
   updateProducts: (products: Product[]) => void;
   updateCategories: (categories: Category[]) => void;
   updateBranches: (branches: Branch[]) => void;
+  updateBranchId: (id: string) => void;
 };
 
 const initialStore: Store = {
@@ -33,6 +35,7 @@ const initialStore: Store = {
   products: [] as Product[],
   categories: [] as Category[],
   branches: [] as Branch[],
+  branchId: "",
 };
 
 export const useFlowdrStore = create<State & Actions>()(
@@ -50,6 +53,9 @@ export const useFlowdrStore = create<State & Actions>()(
       },
       updateBranches(branches: Branch[]) {
         set((state) => ({ store: { ...state.store, branches } }));
+      },
+      updateBranchId(id: string) {
+        set((state) => ({ store: { ...state.store, branchId: id } }));
       },
     }),
     { name: "flowdrStore" }

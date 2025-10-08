@@ -1,15 +1,15 @@
 "use client";
 
-const PurchaseOrders = ({ companyId }: { companyId: string }) => {
+const SaleOrders = ({ branchId }: { branchId: string }) => {
   // const { data, isLoading, isError, refetch } = useQuery({
   //     queryKey: ["inventory", branch],
   //     queryFn: () => fetchInventories(branch),
   //     enabled: !!branch,
   //   });
 
-  console.log(companyId);
+  console.log(branchId);
 
-  return <section>PurchaseOrders</section>;
+  return <section>SaleOrders</section>;
 };
 
-export default PurchaseOrders;
+export default SaleOrders;

@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseOrder } from "@/types/flowdr";
 import { ColumnDef } from "@tanstack/react-table";
-import { Calendar, User, Building, Package } from "lucide-react";
+import { Calendar, User, Building } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useFlowdrStore } from "@/store/store";
 
 export const columns: ColumnDef<PurchaseOrder>[] = [
   {

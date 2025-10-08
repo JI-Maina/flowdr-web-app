@@ -116,6 +116,19 @@ export interface Vendor {
   is_active: boolean;
 }
 
+export interface Client {
+  id: string;
+  user: User;
+  first_name: string;
+  last_name: string;
+  company: string;
+  branch: string;
+  client_type: string;
+  company_name: string;
+  phone: string;
+  is_active: boolean;
+}
+
 export interface PurchaseOrderItem {
   id: string;
   order: string;
@@ -138,4 +151,42 @@ export interface PurchaseOrder {
   total_value: number;
   notes: string;
   items: PurchaseOrderItem[];
+}
+
+export interface SaleOrderItem {
+  id: string;
+  order: string;
+  product: Product;
+  quantity: number;
+  unit_price: string;
+}
+
+export interface SaleOrder {
+  id: string;
+  client: Client;
+  branch: string;
+  sold_by: User;
+  status: string;
+  required_date: string;
+  shipped_date: string;
+  items: SaleOrderItem[];
+}
+
+export interface RequisitionOrderItem {
+  id: string;
+  requisition: string;
+  product: Product;
+  quantity: number;
+  quantity_fulfilled: number;
+}
+
+export interface RequisitionOrder {
+  id: string;
+  source_branch: string;
+  destination_branch: string;
+  created_by: User;
+  approved_by: User;
+  status: string;
+  notes: string;
+  items: RequisitionOrderItem[];
 }

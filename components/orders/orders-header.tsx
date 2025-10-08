@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import { Button } from "../ui/button";
 import { useFlowdrStore } from "@/store/store";
@@ -14,26 +13,23 @@ import {
 } from "../ui/select";
 
 export const OrdersHeader = () => {
-  const branches = useFlowdrStore((state) => state.store.branches);
-  const [branch, setBranch] = useState("");
-
-  useEffect(() => {
-    if (branches.length > 0) {
-      setBranch(branches[0].id);
-    }
-  }, [branches]);
+  const { store, updateBranchId } = useFlowdrStore((state) => state);
+  const { branchId, branches } = store;
 
   return (
     <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Purchase Orders</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Sale Orders</h1>
         <p className="text-muted-foreground">
           Track and manage inventory across all branches
         </p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <Select value={branch} onValueChange={setBranch}>
+        <Select
+          value={branchId}
+          onValueChange={(value) => updateBranchId(value)}
+        >
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Select branch" />
           </SelectTrigger>

@@ -16,8 +16,6 @@ const PurchaseOrderPage: FC<PurchaseProps> = async ({ params }) => {
 
   const data = await fetchPurchaseOrders(companyId);
 
-  console.log(data);
-
   return (
     <main className="container mx-auto p-6 space-y-6">
       <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
