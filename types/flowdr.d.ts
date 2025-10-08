@@ -190,3 +190,16 @@ export interface RequisitionOrder {
   notes: string;
   items: RequisitionOrderItem[];
 }
+
+export interface Client {
+  id: string;
+  user: User;
+  first_name: string;
+  last_name: string;
+  company: string;
+  branch: string;
+  client_type: string;
+  company_name: string;
+  phone: string;
+  is_active: boolean;
+}
