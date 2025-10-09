@@ -10,7 +10,6 @@ const AddProductsPage = async ({ params }: AddProps) => {
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
-      {/* Header with back button */}
       <header className="flex items-center mb-6">
         <BackButton />
 

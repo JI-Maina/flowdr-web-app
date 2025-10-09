@@ -160,13 +160,13 @@ const ItemsPage: FC<ItemsProps> = async ({ params }) => {
                 <div>
                   <p className="font-medium text-sm">Ordered By</p>
                   <p className="text-sm text-muted-foreground">
-                    {order?.ordered_by.username}
+                    {order?.ordered_by?.username}
                   </p>
                 </div>
                 <div>
                   <p className="font-medium text-sm">Approved By</p>
                   <p className="text-sm text-muted-foreground">
-                    {order?.approved_by.username}
+                    {order?.approved_by?.username}
                   </p>
                 </div>
               </div>
