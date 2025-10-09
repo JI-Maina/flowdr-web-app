@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseOrder } from "@/types/flowdr";
 import { ColumnDef } from "@tanstack/react-table";
-import { Calendar, User, Building } from "lucide-react";
+import { Calendar, User, Building, Trash2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { PurchaseDeleteModal } from "@/components/orders/purchase/purchase-delete-modal";
 
 export const columns: ColumnDef<PurchaseOrder>[] = [
   {
@@ -164,25 +165,31 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
             </span>
           </div>
 
-          <ViewItemsButton order={order} />
+          <ActionButtons order={order} />
         </div>
       );
     },
   },
 ];
 
-const ViewItemsButton = ({ order }: { order: PurchaseOrder }) => {
+const ActionButtons = ({ order }: { order: PurchaseOrder }) => {
   const router = useRouter();
   const path = usePathname();
 
+  const companyId = path.split("/")[2];
+
   return (
-    <Button
-      size="sm"
-      variant="outline"
-      className="shrink-0 h-8 px-2"
-      onClick={() => router.push(`${path}/${order.id}`)}
-    >
-      View
-    </Button>
+    <div className="flex gap-1.5">
+      <Button
+        size="sm"
+        variant="outline"
+        className="shrink-0 h-8 px-2"
+        onClick={() => router.push(`${path}/${order.id}`)}
+      >
+        View
+      </Button>
+
+      <PurchaseDeleteModal companyId={companyId} orderId={order.id} />
+    </div>
   );
 };
