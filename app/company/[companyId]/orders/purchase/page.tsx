@@ -2,8 +2,8 @@ import React, { FC } from "react";
 
 import { columns } from "./columns";
 import { PurchaseTable } from "./purchase-table";
+import { OrderButton } from "@/components/orders/order-btn";
 import { fetchPurchaseOrders } from "@/data/orders/get-orders";
-import { PurchaseOrderBtn } from "@/components/orders/purchase/purchase-order-btn";
 
 type PurchaseProps = {
   params: Promise<{ companyId: string }>;
@@ -26,7 +26,7 @@ const PurchaseOrderPage: FC<PurchaseProps> = async ({ params }) => {
 
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex gap-2">
-            <PurchaseOrderBtn />
+            <OrderButton />
           </div>
         </div>
       </header>

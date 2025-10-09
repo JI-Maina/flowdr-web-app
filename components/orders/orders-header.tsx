@@ -1,8 +1,5 @@
 "use client";
 
-import { Plus } from "lucide-react";
-
-import { Button } from "../ui/button";
 import { useFlowdrStore } from "@/store/store";
 import {
   Select,
@@ -11,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { OrderButton } from "./order-btn";
 
 export const OrdersHeader = () => {
   const { store, updateBranchId } = useFlowdrStore((state) => state);
@@ -44,10 +42,7 @@ export const OrdersHeader = () => {
         </Select>
 
         <div className="flex gap-2">
-          <Button size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Order
-          </Button>
+          <OrderButton />
         </div>
       </div>
     </header>

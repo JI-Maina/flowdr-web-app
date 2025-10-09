@@ -1,18 +1,17 @@
-import React, { FC } from "react";
-
-import { Button } from "@/components/ui/button";
-import { fetchVendors } from "@/data/users/get-users";
 import BackButton from "@/components/common/back-button";
-import { CreatePurchaseOrderForm } from "@/components/orders/purchase/purchase-create-form";
+import { CreateSaleOrderForm } from "@/components/orders/sale/sale-purchase-form";
+import { Button } from "@/components/ui/button";
+import { fetchClients } from "@/data/users/get-users";
+import React, { FC } from "react";
 
 type AddProps = {
   params: Promise<{ companyId: string }>;
 };
 
-const AddPurchaseOrderPage: FC<AddProps> = async ({ params }) => {
+const AddSaleOrderPage: FC<AddProps> = async ({ params }) => {
   const { companyId } = await params;
 
-  const data = await fetchVendors(companyId);
+  const clients = await fetchClients(companyId);
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
@@ -21,21 +20,21 @@ const AddPurchaseOrderPage: FC<AddProps> = async ({ params }) => {
           <BackButton />
 
           <div>
-            <h1 className="text-3xl font-bold">Purchase Order</h1>
+            <h1 className="text-3xl font-bold">Sale Order</h1>
             <p className="text-gray-500">Add new purchase order</p>
           </div>
         </div>
 
         <div className="">
-          <Button>Add vendor</Button>
+          <Button>Add client</Button>
         </div>
       </header>
 
       <section>
-        <CreatePurchaseOrderForm companyId={companyId} vendors={data} />
+        <CreateSaleOrderForm clients={clients} companyId={companyId} />
       </section>
     </main>
   );
 };
 
-export default AddPurchaseOrderPage;
+export default AddSaleOrderPage;

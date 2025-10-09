@@ -4,12 +4,11 @@ import z from "zod";
 import { FC } from "react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
-import { useFlowdrStore } from "@/store/store";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarIcon,
   Package,
@@ -18,13 +17,14 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { Vendor } from "@/types/flowdr";
+import { cn } from "@/lib/utils";
+import { Client } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
+import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { PurchaseItemsModal } from "./purchase-items-modal";
-import { createPurchaseOrder } from "@/data/orders/create-orders";
+import { SaleItemsModal } from "./sale-items-modal";
+import { createSaleOrder } from "@/data/orders/create-orders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -55,60 +55,60 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type CreateProps = {
-  vendors: Vendor[];
-  companyId: string;
-};
+type CreateProps = { clients: Client[]; companyId: string };
 
-export type Item = {
+export type SaleItem = {
   product_id: string;
-  order_quantity: number;
-  delivered_quantity: number;
+  quantity: number;
   unit_price: string;
-  received_date: null;
 };
 
 const status = [
   "DRAFT",
-  "PENDING",
-  "APPROVED",
-  "PARTIALLY_RECEIVED",
-  "COMPLETED",
+  "CONFIRMED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
   "CANCELLED",
+  "RETURNED",
 ];
 
-const createProductSchema = z.object({
-  vendor: z.string(),
+const saleOrderSchema = z.object({
+  client: z.string().min(3, { message: "Client is required" }),
+  branch: z.string().min(3, { message: "Branch is required" }),
   status: z.enum(status),
   deliveryDate: z.date().refine((val) => !!val, {
     message: "Match date is required.",
   }),
-  notes: z.string(),
+  shippingDate: z.date().refine((val) => !!val, {
+    message: "Shipping date is required.",
+  }),
 });
 
-export const CreatePurchaseOrderForm: FC<CreateProps> = ({
-  vendors,
+export const CreateSaleOrderForm: FC<CreateProps> = ({
+  clients,
   companyId,
 }) => {
-  const products = useFlowdrStore((state) => state.store.products);
+  const { products, branches } = useFlowdrStore((state) => state.store);
 
-  const [orderItems, setOrderItems] = useState<Item[]>([]);
+  const [orderItems, setOrderItems] = useState<SaleItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof createProductSchema>>({
-    resolver: zodResolver(createProductSchema),
+  const form = useForm<z.infer<typeof saleOrderSchema>>({
+    resolver: zodResolver(saleOrderSchema),
     defaultValues: {
-      vendor: "",
+      client: "",
+      branch: "",
       status: "DRAFT",
       deliveryDate: new Date(),
-      notes: "",
+      shippingDate: new Date(),
     },
   });
 
   const router = useRouter();
-  const path = usePathname();
+  const queryClient = useQueryClient();
 
-  const addOrderItem = (newItem: Item) => {
+  const addOrderItem = (newItem: SaleItem) => {
     setOrderItems((prev) => [...prev, newItem]);
   };
 
@@ -118,29 +118,34 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
 
   const calculateTotal = () => {
     return orderItems.reduce((total, item) => {
-      return total + parseFloat(item.unit_price) * (item.order_quantity || 0);
+      return total + parseFloat(item.unit_price) * (item.quantity || 0);
     }, 0);
   };
 
-  const onSubmit = async (values: z.infer<typeof createProductSchema>) => {
+  const onSubmit = async (values: z.infer<typeof saleOrderSchema>) => {
     try {
       const order = {
-        vendor_id: values.vendor,
+        client_id: values.client,
         status: values.status,
-        expected_delivery_date: new Date(values.deliveryDate)
+        required_date: new Date(values.deliveryDate)
           .toISOString()
           .split("T")[0],
-        notes: values.notes,
+        shipped_date: new Date(values.deliveryDate).toISOString().split("T")[0],
         items: [...orderItems],
       };
 
-      const res = await createPurchaseOrder(companyId, order);
+      const res = await createSaleOrder(values.branch, order);
 
-      if (res.error === "0") {
-        toast.success("Success", { description: res.message });
-        router.replace(`/company/${companyId}/orders/purchase`);
+      if (res.status === "success" || !res.error) {
+        toast.success("Success", {
+          description: res.message || "Sale order created successfully",
+        });
+        queryClient.invalidateQueries({ queryKey: ["saleOrders"] });
+        router.replace(`/company/${companyId}/orders/sale`);
       } else {
-        toast.error("Failed!", { description: res.message });
+        toast.error("Failed!", {
+          description: res.message || "Failed to create sale order",
+        });
       }
     } catch (error) {
       console.log(error);
@@ -164,10 +169,38 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                 Order Information
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
-                  name="vendor"
+                  name="branch"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Branch *</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select branch" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {branches.map((branch) => (
+                            <SelectItem key={branch.id} value={branch.id}>
+                              <div className="flex flex-col">
+                                <span>{branch.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  name="client"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
@@ -177,16 +210,16 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select vendor" />
+                          <SelectValue placeholder="Select client" />
                         </SelectTrigger>
                         <SelectContent>
-                          {vendors.map((vendor) => (
-                            <SelectItem key={vendor.id} value={vendor.id}>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
                               <div className="flex flex-col">
-                                <span>{vendor.user.username}</span>
-                                {vendor.vendor_company && (
+                                <span>{client.user.username}</span>
+                                {client.company_name && (
                                   <span className="text-xs text-muted-foreground">
-                                    {vendor.vendor_company}
+                                    {client.company_name}
                                   </span>
                                 )}
                               </div>
@@ -224,7 +257,9 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                     </FormItem>
                   )}
                 />
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="deliveryDate"
@@ -264,22 +299,42 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <div className="mt-6">
                 <FormField
-                  name="notes"
                   control={form.control}
+                  name="shippingDate"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Notes</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Add any special instructions or notes for this order..."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Shipping Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Select date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => date < new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -346,7 +401,7 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                                 </div>
                               </TableCell>
                               <TableCell className="text-right font-medium">
-                                {item.order_quantity}
+                                {item.quantity}
                               </TableCell>
                               <TableCell className="text-right">
                                 ${parseFloat(item.unit_price).toFixed(2)}
@@ -355,7 +410,7 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                                 $
                                 {(
                                   parseFloat(item.unit_price) *
-                                  (item.order_quantity || 0)
+                                  (item.quantity || 0)
                                 ).toFixed(2)}
                               </TableCell>
                               <TableCell>
@@ -425,7 +480,7 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
       </Form>
 
       {/* Items Modal */}
-      <PurchaseItemsModal
+      <SaleItemsModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
