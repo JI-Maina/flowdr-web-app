@@ -203,3 +203,17 @@ export interface Client {
   phone: string;
   is_active: boolean;
 }
+
+export interface Vendor {
+  id: string;
+  user: User;
+  company: string;
+  first_name: string;
+  last_name: string;
+  vendor_type: string;
+  vendor_company: string;
+  primary_phone: string;
+  secondary_phone: string;
+  website: string;
+  is_active: boolean;
+}

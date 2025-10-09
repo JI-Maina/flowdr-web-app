@@ -14,8 +14,6 @@ const CustomersPage: FC<CustomerProps> = async ({ params }) => {
 
   const data = await fetchClients(companyId);
 
-  console.log(data);
-
   return (
     <main className="container mx-auto p-4 space-y-6">
       <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
