@@ -1,12 +1,12 @@
 "use client";
 
 import { toast } from "sonner";
-import { FC, useState } from "react";
+import { FC, use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Rotate3D, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { deletePurchaseOrder } from "@/data/orders/delete-orders";
+import { deleteOrder } from "@/data/orders/delete-orders";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -17,22 +17,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
-type DeleteProps = { companyId: string; orderId: string };
+type DeleteProps = { path: string };
 
-export const PurchaseDeleteModal: FC<DeleteProps> = ({
-  companyId,
-  orderId,
-}) => {
+export const DeleteOrderModal: FC<DeleteProps> = ({ path }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setIsOpen] = useState(false);
 
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      const res = await deletePurchaseOrder(companyId, orderId);
+      const res = await deleteOrder(path);
 
       if (res.error === "0") {
         setIsOpen(false);
@@ -47,6 +46,7 @@ export const PurchaseDeleteModal: FC<DeleteProps> = ({
       });
     } finally {
       setIsLoading(false);
+      queryClient.invalidateQueries({ queryKey: ["saleOrders"] });
       setTimeout(() => router.refresh(), 300);
     }
   };

@@ -1,12 +1,13 @@
 "use client";
 
+import { ColumnDef } from "@tanstack/react-table";
+import { Calendar, User, Building } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseOrder } from "@/types/flowdr";
-import { ColumnDef } from "@tanstack/react-table";
-import { Calendar, User, Building, Trash2 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { PurchaseDeleteModal } from "@/components/orders/purchase/purchase-delete-modal";
+import { DeleteOrderModal } from "@/components/orders/delete-order";
 
 export const columns: ColumnDef<PurchaseOrder>[] = [
   {
@@ -189,7 +190,9 @@ const ActionButtons = ({ order }: { order: PurchaseOrder }) => {
         View
       </Button>
 
-      <PurchaseDeleteModal companyId={companyId} orderId={order.id} />
+      <DeleteOrderModal
+        path={`api/companies/${companyId}/purchase-orders/${order.id}`}
+      />
     </div>
   );
 };

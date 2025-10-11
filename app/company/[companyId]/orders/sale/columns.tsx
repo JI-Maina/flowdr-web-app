@@ -1,12 +1,13 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Package, User, Calendar } from "lucide-react";
+import { Package, User, Calendar, Delete } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { SaleOrder } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DeleteOrderModal } from "@/components/orders/delete-order";
 
 export const columns: ColumnDef<SaleOrder>[] = [
   {
@@ -168,13 +169,19 @@ const ViewItemsButton = ({ order }: { order: SaleOrder }) => {
   const path = usePathname();
 
   return (
-    <Button
-      size="sm"
-      variant="outline"
-      className="shrink-0 h-8 px-2"
-      onClick={() => router.push(`${path}/${order.branch}-${order.id}`)}
-    >
-      View
-    </Button>
+    <div className="flex gap-1.5">
+      <Button
+        size="sm"
+        variant="outline"
+        className="shrink-0 h-8 px-2"
+        onClick={() => router.push(`${path}/${order.branch}-${order.id}`)}
+      >
+        View
+      </Button>
+
+      <DeleteOrderModal
+        path={`api/branches/${path.split("/")[2]}/sale-orders/${order.id}`}
+      />
+    </div>
   );
 };

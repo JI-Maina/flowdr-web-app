@@ -2,12 +2,20 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { usePathname, useRouter } from "next/navigation";
-import { CheckCircle, Clock, XCircle, Truck, Package } from "lucide-react";
+import {
+  CheckCircle,
+  Clock,
+  XCircle,
+  Truck,
+  Package,
+  Delete,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { RequisitionOrder } from "@/types/flowdr";
+import { DeleteOrderModal } from "@/components/orders/delete-order";
 
 export const columns: ColumnDef<RequisitionOrder>[] = [
   {
@@ -194,14 +202,22 @@ const ViewItemsButton = ({ order }: { order: RequisitionOrder }) => {
   const router = useRouter();
   const path = usePathname();
 
+  const companyId = path.split("/")[2];
+
   return (
-    <Button
-      size="sm"
-      variant="outline"
-      className="shrink-0 h-8 px-2"
-      onClick={() => router.push(`${path}/${order.id}`)}
-    >
-      View
-    </Button>
+    <div className="flex gap-1.5">
+      <Button
+        size="sm"
+        variant="outline"
+        className="shrink-0 h-8 px-2"
+        onClick={() => router.push(`${path}/${order.id}`)}
+      >
+        View
+      </Button>
+
+      <DeleteOrderModal
+        path={`api/companies/${companyId}/requisition-orders/${order.id}`}
+      />
+    </div>
   );
 };
