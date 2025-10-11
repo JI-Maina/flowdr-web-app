@@ -1,27 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useFlowdrStore } from "@/store/store";
-import { RequisitionOrder } from "@/types/flowdr";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  XCircle,
-  Truck,
-  Package,
-} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { CheckCircle, Clock, XCircle, Truck, Package } from "lucide-react";
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-};
+import { Badge } from "@/components/ui/badge";
+import { useFlowdrStore } from "@/store/store";
+import { Button } from "@/components/ui/button";
+import { RequisitionOrder } from "@/types/flowdr";
 
 export const columns: ColumnDef<RequisitionOrder>[] = [
   {
@@ -109,42 +95,7 @@ export const columns: ColumnDef<RequisitionOrder>[] = [
       );
     },
   },
-  //   {
-  //     accessorKey: "fulfillment",
-  //     header: "Fulfillment",
-  //     cell: ({ row }) => {
-  //       const requisition = row.original;
-  //       const totalItems = requisition.items.reduce(
-  //         (sum, item) => sum + item.quantity,
-  //         0
-  //       );
-  //       const totalFulfilled = requisition.items.reduce(
-  //         (sum, item) => sum + item.quantity_fulfilled,
-  //         0
-  //       );
-  //       const percentage =
-  //         totalItems > 0 ? Math.round((totalFulfilled / totalItems) * 100) : 0;
 
-  //       return (
-  //         <div className="flex items-center gap-2">
-  //           <div className="flex-1 min-w-[60px]">
-  //             <div className="flex justify-between text-xs mb-1">
-  //               <span>{percentage}%</span>
-  //               <span>
-  //                 {totalFulfilled}/{totalItems}
-  //               </span>
-  //             </div>
-  //             <div className="w-full bg-secondary rounded-full h-2">
-  //               <div
-  //                 className="bg-green-600 h-2 rounded-full transition-all duration-300"
-  //                 style={{ width: `${percentage}%` }}
-  //               />
-  //             </div>
-  //           </div>
-  //         </div>
-  //       );
-  //     },
-  //   },
   {
     accessorKey: "created_by",
     header: "Created By",
@@ -170,10 +121,10 @@ export const columns: ColumnDef<RequisitionOrder>[] = [
       return (
         <div>
           <div className="text-sm font-medium">
-            {requisition.approved_by.username}
+            {requisition?.approved_by?.username || "—"}
           </div>
           <div className="text-xs text-muted-foreground capitalize">
-            {requisition.approved_by.role}
+            {requisition?.approved_by?.role || "—"}
           </div>
         </div>
       );

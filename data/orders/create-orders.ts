@@ -1,9 +1,9 @@
 "use server";
 
 import { getToken } from "@/actions/auth-action";
-import { Item } from "@/components/orders/purchase/purchase-create-form";
 import { SaleItem } from "@/components/orders/sale/sale-purchase-form";
-import { PurchaseOrder, RequisitionOrder, SaleOrder } from "@/types/flowdr";
+import { Item } from "@/components/orders/purchase/purchase-create-form";
+import { RequisitionItem } from "@/components/orders/requisition/create-requisition";
 
 type PurchasePayload = {
   vendor_id: string;
@@ -11,6 +11,14 @@ type PurchasePayload = {
   expected_delivery_date: string;
   notes: string;
   items: Item[];
+};
+
+type RequisitionPayload = {
+  source_branch: string;
+  destination_branch: string;
+  status: string;
+  notes: string;
+  items: RequisitionItem[];
 };
 
 type SalePayload = {
@@ -49,6 +57,40 @@ export const createPurchaseOrder = async (
     return await res.json();
   } catch (error) {
     console.log("Error fetching purchase order", error);
+    throw error;
+  }
+};
+
+export const createRequisitionOrder = async (
+  companyId: string,
+  order: RequisitionPayload
+) => {
+  try {
+    const token = await getToken();
+    const url = process.env.NEXT_PUBLIC_API_HOST;
+
+    const res = await fetch(
+      `${url}/api/companies/${companyId}/requisition-orders/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(order),
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || "Failed to create requisition order."
+      );
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.log("Error fetching requisition order", error);
     throw error;
   }
 };
