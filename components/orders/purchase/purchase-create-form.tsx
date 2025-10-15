@@ -65,7 +65,7 @@ export type Item = {
   order_quantity: number;
   delivered_quantity: number;
   unit_price: string;
-  received_date: null;
+  received_date: string | null;
 };
 
 const status = [

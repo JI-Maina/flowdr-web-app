@@ -1,6 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { Plus, Minus } from "lucide-react";
+
+import { Product } from "@/types/flowdr";
+import { Item } from "./purchase-create-form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,8 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,10 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFlowdrStore } from "@/store/store";
-import { Product, PurchaseOrderItem } from "@/types/flowdr";
-import { Search, Plus, Minus } from "lucide-react";
-import { Item } from "./purchase-create-form";
 
 interface PurchaseItemsModalProps {
   open: boolean;

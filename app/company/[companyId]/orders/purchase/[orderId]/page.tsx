@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { fetchPurchaseOrder } from "@/data/orders/get-orders";
+import { EditOrderButton } from "@/components/orders/edit-order";
 import {
   Card,
   CardContent,
@@ -27,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import BackButton from "@/components/common/back-button";
 
 type ItemsProps = {
   params: Promise<{ orderId: string; companyId: string }>;
@@ -67,6 +69,7 @@ const ItemsPage: FC<ItemsProps> = async ({ params }) => {
             <div className="flex justify-between items-start gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
+                  <BackButton />
                   <h1 className="text-3xl font-bold">Purchase Order</h1>
                   <Badge
                     variant={getStatusVariant(order?.status)}
@@ -83,15 +86,9 @@ const ItemsPage: FC<ItemsProps> = async ({ params }) => {
             </div>
 
             <div className="flex gap-2">
-              <Button size="sm" variant={"outline"} className="gap-2">
-                <Edit className="h-4 w-4" />
-                Edit
-              </Button>
-
-              <Button size="sm" className="gap-2">
-                <Trash2 className="h-4 w-4" />
-                Cancel
-              </Button>
+              <EditOrderButton
+                path={`/company/${companyId}/orders/purchase/${orderId}/edit`}
+              />
             </div>
           </div>
         </CardHeader>
@@ -193,10 +190,6 @@ const ItemsPage: FC<ItemsProps> = async ({ params }) => {
               <CheckCircle className="h-5 w-5" />
               <CardTitle>Order Items</CardTitle>
             </div>
-            <Button size="sm" variant={"outline"} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Item
-            </Button>
           </div>
           <CardDescription>
             Products included in this purchase order
@@ -277,22 +270,6 @@ const ItemsPage: FC<ItemsProps> = async ({ params }) => {
                             ? "Partial"
                             : "Pending"}
                         </Badge>
-
-                        {/* Item Actions Dropdown */}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0"
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
