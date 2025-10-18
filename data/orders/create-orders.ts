@@ -1,7 +1,7 @@
 "use server";
 
 import { getToken } from "@/actions/auth-action";
-import { SaleItem } from "@/components/orders/sale/sale-purchase-form";
+import { SaleItem } from "@/components/orders/sale/create-sale-order";
 import { Item } from "@/components/orders/purchase/purchase-create-form";
 import { RequisitionItem } from "@/components/orders/requisition/create-requisition";
 

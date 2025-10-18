@@ -1,5 +1,5 @@
 import BackButton from "@/components/common/back-button";
-import { CreateSaleOrderForm } from "@/components/orders/sale/sale-purchase-form";
+import { CreateSaleOrderForm } from "@/components/orders/sale/create-sale-order";
 import { Button } from "@/components/ui/button";
 import { fetchClients } from "@/data/users/get-users";
 import React, { FC } from "react";

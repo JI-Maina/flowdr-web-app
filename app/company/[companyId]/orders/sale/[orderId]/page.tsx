@@ -1,17 +1,9 @@
 import React, { FC } from "react";
-import {
-  Calendar,
-  Edit,
-  Plus,
-  ShoppingCart,
-  Trash2,
-  Truck,
-  User,
-} from "lucide-react";
+import { Calendar, ShoppingCart, Truck, User } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { fetchSaleOrder } from "@/data/orders/get-orders";
+import { EditOrderButton } from "@/components/orders/edit-order";
 import {
   Card,
   CardContent,
@@ -29,11 +21,11 @@ import {
 } from "@/components/ui/table";
 
 type SaleParams = {
-  params: Promise<{ orderId: string }>;
+  params: Promise<{ orderId: string; companyId: string }>;
 };
 
 const SaleOrderItems: FC<SaleParams> = async ({ params }) => {
-  const { orderId } = await params;
+  const { orderId, companyId } = await params;
 
   const branchId = orderId.split("-")[0];
   const id = orderId.split("-")[1];
@@ -91,15 +83,9 @@ const SaleOrderItems: FC<SaleParams> = async ({ params }) => {
             </div>
 
             <div className="flex gap-2">
-              <Button size="sm" variant={"outline"} className="gap-2">
-                <Edit className="h-4 w-4" />
-                Edit
-              </Button>
-
-              <Button size="sm" className="gap-2">
-                <Trash2 className="h-4 w-4" />
-                Cancel
-              </Button>
+              <EditOrderButton
+                path={`/company/${companyId}/orders/sale/${orderId}/edit/`}
+              />
             </div>
           </div>
         </CardHeader>
@@ -202,10 +188,6 @@ const SaleOrderItems: FC<SaleParams> = async ({ params }) => {
               <ShoppingCart className="h-5 w-5" />
               <CardTitle>Order Items</CardTitle>
             </div>
-            <Button size="sm" variant={"outline"} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Item
-            </Button>
           </div>
           <CardDescription>
             Products included in this sales order
@@ -222,7 +204,6 @@ const SaleOrderItems: FC<SaleParams> = async ({ params }) => {
                 <TableHead className="text-right">Total</TableHead>
                 <TableHead>SKU</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -274,26 +255,6 @@ const SaleOrderItems: FC<SaleParams> = async ({ params }) => {
                       >
                         {order.status.toLowerCase()}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          title="Edit item"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          title="Remove item"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
                     </TableCell>
                   </TableRow>
                 );

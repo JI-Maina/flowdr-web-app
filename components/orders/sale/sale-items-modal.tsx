@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { SaleItem } from "./sale-purchase-form";
+import { SaleItem } from "./create-sale-order";
 import {
   Dialog,
   DialogContent,

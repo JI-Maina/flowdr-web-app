@@ -1,30 +1,28 @@
 "use client";
 
 import z from "zod";
-import { FC } from "react";
 import { toast } from "sonner";
-import { useState } from "react";
 import { format } from "date-fns";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarIcon,
   Package,
   Plus,
   Rotate3DIcon,
+  Save,
   Trash2,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Client } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
+import { Client, SaleOrder } from "@/types/flowdr";
 import { Calendar } from "@/components/ui/calendar";
 import { SaleItemsModal } from "./sale-items-modal";
-import { createSaleOrder } from "@/data/orders/create-orders";
+import { updateSaleOrder } from "@/data/orders/update-orders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -55,12 +53,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type CreateProps = { clients: Client[]; companyId: string };
-
 export type SaleItem = {
+  id?: string;
   product_id: string;
   quantity: number;
   unit_price: string;
+};
+
+type EditProps = {
+  clients: Client[];
+  companyId: string;
+  order: SaleOrder;
 };
 
 const status = [
@@ -73,7 +76,7 @@ const status = [
   "RETURNED",
 ];
 
-const saleOrderSchema = z.object({
+const editSchema = z.object({
   client: z.string().min(3, { message: "Client is required" }),
   branch: z.string().min(3, { message: "Branch is required" }),
   status: z.enum(status),
@@ -85,28 +88,36 @@ const saleOrderSchema = z.object({
   }),
 });
 
-export const CreateSaleOrderForm: FC<CreateProps> = ({
+export const EditSaleOrderForm: FC<EditProps> = ({
   clients,
   companyId,
+  order,
 }) => {
   const { products, branches } = useFlowdrStore((state) => state.store);
 
-  const [orderItems, setOrderItems] = useState<SaleItem[]>([]);
+  const [orderItems, setOrderItems] = useState<SaleItem[]>(() =>
+    order.items.map((item) => ({
+      id: item.id,
+      product_id: item.product.id,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+    }))
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof saleOrderSchema>>({
-    resolver: zodResolver(saleOrderSchema),
-    defaultValues: {
-      client: "",
-      branch: "",
-      status: "DRAFT",
-      deliveryDate: new Date(),
-      shippingDate: new Date(),
-    },
-  });
-
   const router = useRouter();
-  const queryClient = useQueryClient();
+
+  const form = useForm<z.infer<typeof editSchema>>({
+    defaultValues: {
+      client: order.client.id,
+      branch: order.branch,
+      status: order.status,
+      deliveryDate: new Date(order.required_date),
+      shippingDate: new Date(order.shipped_date),
+    },
+    mode: "onChange",
+  });
 
   const addOrderItem = (newItem: SaleItem) => {
     setOrderItems((prev) => [...prev, newItem]);
@@ -122,9 +133,9 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
     }, 0);
   };
 
-  const onSubmit = async (values: z.infer<typeof saleOrderSchema>) => {
+  const onSubmit = async (values: z.infer<typeof editSchema>) => {
     try {
-      const order = {
+      const updatedOrder = {
         client_id: values.client,
         status: values.status,
         required_date: new Date(values.deliveryDate)
@@ -134,22 +145,19 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
         items: [...orderItems],
       };
 
-      const res = await createSaleOrder(values.branch, order);
+      const res = await updateSaleOrder(companyId, order.id, updatedOrder);
 
-      if (res.status === "success" || !res.error) {
-        toast.success("Success", {
-          description: res.message || "Sale order created successfully",
+      if (res.error === "0") {
+        toast.success("Update Success", {
+          description: "Order updated successfully",
         });
-        queryClient.invalidateQueries({ queryKey: ["saleOrders"] });
         router.replace(`/company/${companyId}/orders/sale`);
       } else {
-        toast.error("Failed!", {
-          description: res.message || "Failed to create sale order",
-        });
+        toast.error("Update Failed!", { description: res.message });
       }
     } catch (error) {
       console.log(error);
-      toast.error("Creation Failed!", {
+      toast.error("Update Failed!", {
         description: "Server error, try again later!",
       });
     }
@@ -204,7 +212,7 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Vendor *</FormLabel>
+                      <FormLabel>Client *</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -388,6 +396,17 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
                             (p) => p.id === item.product_id
                           );
 
+                          const updateQuantity = (newQuantity: number) => {
+                            if (newQuantity < 1) return; // Prevent negative quantities
+                            setOrderItems((prev) =>
+                              prev.map((prevItem) =>
+                                prevItem.product_id === item.product_id
+                                  ? { ...prevItem, quantity: newQuantity }
+                                  : prevItem
+                              )
+                            );
+                          };
+
                           return (
                             <TableRow key={item.product_id}>
                               <TableCell>
@@ -400,8 +419,40 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right font-medium">
-                                {item.quantity}
+                              <TableCell className="text-right">
+                                <div className="flex items-center justify-end space-x-2">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() =>
+                                      updateQuantity(item.quantity - 1)
+                                    }
+                                  >
+                                    <span className="sr-only">
+                                      Decrease quantity
+                                    </span>
+                                    -
+                                  </Button>
+                                  <span className="font-medium w-8 text-center">
+                                    {item.quantity}
+                                  </span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() =>
+                                      updateQuantity(item.quantity + 1)
+                                    }
+                                  >
+                                    <span className="sr-only">
+                                      Increase quantity
+                                    </span>
+                                    +
+                                  </Button>
+                                </div>
                               </TableCell>
                               <TableCell className="text-right">
                                 ${parseFloat(item.unit_price).toFixed(2)}
@@ -465,16 +516,36 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
           </Card>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t">
+          <div className="flex justify-between gap-3 pt-6 border-t">
             <Button
-              type="submit"
-              disabled={orderItems.length === 0 || form.formState.isSubmitting}
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
             >
-              Create Purchase Order{" "}
-              {form.formState.isSubmitting && (
-                <Rotate3DIcon className="h-4 w-4 animate-spin" />
-              )}
+              Cancel
             </Button>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => form.reset()}
+              >
+                Reset Changes
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  orderItems.length === 0 || form.formState.isSubmitting
+                }
+                className="gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Update Order
+                {form.formState.isSubmitting && (
+                  <Rotate3DIcon className="h-4 w-4 animate-spin" />
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>
