@@ -35,6 +35,8 @@ import {
   Truck,
   UserCog,
   Building,
+  CreditCard,
+  Receipt,
 } from "lucide-react";
 import { LogoIcon } from "../logo";
 
@@ -100,7 +102,23 @@ export const AdminSidebar = memo(() => {
         },
       ],
     },
-
+    {
+      title: "Payments",
+      icon: CreditCard,
+      href: `/company/${companyId}/payments/invoices`,
+      subItems: [
+        {
+          title: "Invoices",
+          icon: FileText,
+          href: `/company/${companyId}/payments/invoices`,
+        },
+        {
+          title: "Bills",
+          icon: Receipt,
+          href: `/company/${companyId}/payments/bills`,
+        },
+      ],
+    },
     {
       title: "Users",
       icon: Users,

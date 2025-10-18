@@ -1,16 +1,8 @@
 import { FC } from "react";
-import {
-  Calendar,
-  User,
-  DollarSign,
-  CheckCircle,
-  Edit,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Calendar, User, DollarSign, CheckCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import BackButton from "@/components/common/back-button";
 import { fetchPurchaseOrder } from "@/data/orders/get-orders";
 import { EditOrderButton } from "@/components/orders/edit-order";
 import {
@@ -28,7 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import BackButton from "@/components/common/back-button";
 
 type ItemsProps = {
   params: Promise<{ orderId: string; companyId: string }>;

@@ -217,3 +217,26 @@ export interface Vendor {
   website: string;
   is_active: boolean;
 }
+
+export interface Bill {
+  id: string;
+  vendor: string;
+  due_date: string;
+  amount_due: string;
+  status: string;
+  balance: number;
+  total_paid: number;
+  order: PurchaseOrder;
+}
+
+export interface BankAccount {
+  id: string;
+  company: Company;
+  name: string;
+  account_type: string;
+  bank_account_number: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  description: string;
+}

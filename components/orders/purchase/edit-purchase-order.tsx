@@ -111,7 +111,6 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<Item | null>(null);
 
   const form = useForm<z.infer<typeof editProductSchema>>({
     resolver: zodResolver(editProductSchema),
@@ -337,7 +336,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                   <Button
                     type="button"
                     onClick={() => {
-                      setEditingItem(null);
+                      // setEditingItem(null);
                       setIsModalOpen(true);
                     }}
                     className="gap-2"
@@ -348,6 +347,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                 </div>
               </div>
             </CardHeader>
+
             <CardContent>
               {orderItems.length > 0 ? (
                 <div className="space-y-4">
@@ -513,6 +513,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                               <TableCell>
                                 <div className="flex items-center justify-center gap-2">
                                   <Button
+                                    type="button"
                                     variant="outline"
                                     size="icon"
                                     onClick={decrementOrderedQuantity}
@@ -528,6 +529,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                                     {item.order_quantity}
                                   </div>
                                   <Button
+                                    type="button"
                                     variant="outline"
                                     size="icon"
                                     onClick={incrementOrderedQuantity}
@@ -542,6 +544,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                               <TableCell>
                                 <div className="flex items-center justify-center gap-2">
                                   <Button
+                                    type="button"
                                     variant="outline"
                                     size="icon"
                                     onClick={decrementDeliveredQuantity}
@@ -560,6 +563,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                                     {item.delivered_quantity}
                                   </div>
                                   <Button
+                                    type="button"
                                     variant="outline"
                                     size="icon"
                                     onClick={incrementDeliveredQuantity}
@@ -650,6 +654,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
 
                               <TableCell>
                                 <Button
+                                  type="button"
                                   variant="ghost"
                                   size="icon"
                                   onClick={() =>
@@ -684,10 +689,8 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
                     Add products to update this purchase order
                   </p>
                   <Button
-                    onClick={() => {
-                      setEditingItem(null);
-                      setIsModalOpen(true);
-                    }}
+                    type="button"
+                    onClick={() => setIsModalOpen(true)}
                     className="gap-2"
                   >
                     <Plus className="h-4 w-4" />

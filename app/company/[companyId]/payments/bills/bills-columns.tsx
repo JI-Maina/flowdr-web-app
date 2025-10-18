@@ -1,0 +1,239 @@
+"use client";
+
+import { Bill } from "@/types/flowdr";
+import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CreditCard, Eye, MoreHorizontal, Wallet } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { useFlowdrStore } from "@/store/store";
+import { PaymentModal } from "@/components/orders/payment-modal";
+
+export const billColumns: ColumnDef<Bill>[] = [
+  {
+    accessorKey: "id",
+    header: "Bill ID",
+    cell: ({ row }) => {
+      const bill = row.original;
+      return (
+        <div className="font-medium text-sm">
+          #{bill.id.slice(-6).toUpperCase()}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "vendor",
+    header: "Vendor",
+    cell: ({ row }) => {
+      const bill = row.original;
+      const vendorName = bill.order.vendor.user.username;
+      const vendorCompany = bill.order.vendor.vendor_company;
+
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">{vendorName}</span>
+          {vendorCompany && (
+            <span className="text-xs text-muted-foreground">
+              {vendorCompany}
+            </span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "order.id",
+    header: "Purchase Order",
+    cell: ({ row }) => {
+      const bill = row.original;
+      return (
+        <div className="text-sm">
+          PO#{bill.order.id.slice(-6).toUpperCase()}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "amount_due",
+    header: "Total Amount",
+    cell: ({ row }) => {
+      const bill = row.original;
+      return (
+        <div className="font-semibold text-right">
+          ${parseFloat(bill.amount_due).toFixed(2)}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "balance",
+    header: "Balance",
+    cell: ({ row }) => {
+      const bill = row.original;
+      const balance = bill.balance || parseFloat(bill.amount_due);
+      const isPaid = balance <= 0;
+      const hasPartialPayment = (bill.total_paid || 0) > 0 && balance > 0;
+
+      return (
+        <div
+          className={`text-right font-semibold ${
+            isPaid
+              ? "text-green-600"
+              : hasPartialPayment
+              ? "text-orange-600"
+              : "text-red-600"
+          }`}
+        >
+          ${balance.toFixed(2)}
+          {isPaid && (
+            <div className="text-xs text-green-500 font-normal">
+              Paid in full
+            </div>
+          )}
+          {hasPartialPayment && (
+            <div className="text-xs text-orange-500 font-normal">
+              Partial payment
+            </div>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "due_date",
+    header: "Due Date",
+    cell: ({ row }) => {
+      const bill = row.original;
+      const dueDate = new Date(bill.due_date);
+      const today = new Date();
+      const isOverdue =
+        dueDate < today && (bill.balance || parseFloat(bill.amount_due)) > 0;
+
+      return (
+        <div
+          className={`text-sm ${isOverdue ? "text-red-600 font-medium" : ""}`}
+        >
+          {format(dueDate, "MMM dd, yyyy")}
+          {isOverdue && <div className="text-xs text-red-500">Overdue</div>}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const bill = row.original;
+      const status = bill.status;
+      const balance = bill.balance || parseFloat(bill.amount_due);
+
+      // Auto-calculate status based on balance if needed
+      const effectiveStatus = balance <= 0 ? "PAID" : status;
+
+      const statusConfig = {
+        DRAFT: { variant: "secondary" as const, label: "Draft" },
+        OPEN: { variant: "outline" as const, label: "Open" },
+        SENT: { variant: "outline" as const, label: "Sent" },
+        OVERDUE: { variant: "destructive" as const, label: "Overdue" },
+        PARTIALLY_PAID: { variant: "default" as const, label: "Partial" },
+        PAID: { variant: "success" as const, label: "Paid" },
+        CANCELLED: { variant: "destructive" as const, label: "Cancelled" },
+      };
+
+      const config = statusConfig[
+        effectiveStatus as keyof typeof statusConfig
+      ] || {
+        variant: "outline",
+        label: effectiveStatus,
+      };
+
+      return (
+        <Badge variant={config.variant as any} className="capitalize">
+          {config.label}
+        </Badge>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "order.status",
+    header: "Order Status",
+    cell: ({ row }) => {
+      const bill = row.original;
+      const orderStatus = bill.order.status;
+
+      const orderStatusConfig = {
+        DRAFT: { variant: "secondary" as const },
+        PENDING: { variant: "outline" as const },
+        APPROVED: { variant: "default" as const },
+        COMPLETED: { variant: "success" as const },
+        CANCELLED: { variant: "destructive" as const },
+      };
+
+      const config = orderStatusConfig[
+        orderStatus as keyof typeof orderStatusConfig
+      ] || {
+        variant: "outline",
+      };
+
+      return (
+        <Badge variant={config.variant as any} className="capitalize text-xs">
+          {orderStatus.replace("_", " ")}
+        </Badge>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const bill = row.original;
+
+      return <ActionButtons bill={bill} />;
+    },
+  },
+];
+
+const ActionButtons = ({ bill }: { bill: Bill }) => {
+  const companyId = useFlowdrStore.getState().store.user?.companyId;
+
+  const balance = bill.balance || parseFloat(bill.amount_due);
+  const isFullyPaid = balance <= 0;
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* View Button */}
+      {/* <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Navigate to bill detail page
+              
+              if (companyId) {
+                const router = useRouter();
+                router.push(`/company/${companyId}/payments/bills/${bill.id}`);
+              }
+            }}
+            className="h-8 w-8 p-0"
+          >
+            <Eye className="h-4 w-4" />
+            <span className="sr-only">View bill</span>
+          </Button> */}
+
+      {/* Pay Button - Only show if balance remains */}
+      {!isFullyPaid && <PaymentModal bill={bill} companyId={companyId} />}
+    </div>
+  );
+};
