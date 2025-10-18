@@ -124,31 +124,16 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
   });
 
   const router = useRouter();
-  //   const path = usePathname();
 
   const addOrderItem = (newItem: Item) => {
     setOrderItems((prev) => [...prev, newItem]);
   };
-
-  //   const updateOrderItem = (updatedItem: Item) => {
-  //     setOrderItems((prev) =>
-  //       prev.map((item) =>
-  //         item.product_id === updatedItem.product_id ? updatedItem : item
-  //       )
-  //     );
-  //     setEditingItem(null);
-  //   };
 
   const removeOrderItem = (productId: string) => {
     setOrderItems((prev) =>
       prev.filter((item) => item.product_id !== productId)
     );
   };
-
-  //   const editOrderItem = (item: Item) => {
-  //     setEditingItem(item);
-  //     setIsModalOpen(true);
-  //   };
 
   const calculateTotal = () => {
     return orderItems.reduce((total, item) => {
@@ -169,8 +154,6 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
       };
 
       const res = await updatePurchaseOrder(companyId, order.id, updatedOrder);
-
-      console.log(res);
 
       if (res.error === "0") {
         toast.success("Success", { description: "Order updated successfully" });

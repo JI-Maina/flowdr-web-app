@@ -1,21 +1,21 @@
 "use client";
 
 import z from "zod";
-import { FC } from "react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useFlowdrStore } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Package, Plus, Rotate3DIcon, Trash2 } from "lucide-react";
+import { Minus, Package, Plus, Rotate3DIcon, Save, Trash2 } from "lucide-react";
 
-import { Vendor } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
+import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
+import { RequisitionOrder } from "@/types/flowdr";
 import { Textarea } from "@/components/ui/textarea";
+import { RequisitionItem } from "./create-requisition";
 import { RequisitionItemsModal } from "./requisition-items-modal";
-import { createRequisitionOrder } from "@/data/orders/create-orders";
+import { updateRequisitionOrder } from "@/data/orders/update-orders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -41,23 +41,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type CreateProps = {
-  vendors: Vendor[];
+type EditProps = {
   companyId: string;
-};
-
-export type RequisitionItem = {
-  id?: string;
-  product_id: string;
-  quantity: number;
-  quantity_fulfilled: number;
-  unit_price: string;
-  requisition?: string;
+  order: RequisitionOrder;
 };
 
 const status = ["PENDING", "APPROVED", "DENIED", "FULFILLED", "CANCELLED"];
 
-const createProductSchema = z.object({
+const requisitionSchema = z.object({
   source: z.string(),
   destination: z.string(),
   status: z.enum(status),
@@ -67,28 +58,35 @@ const createProductSchema = z.object({
   notes: z.string(),
 });
 
-export const CreateRequisitionOrderForm: FC<CreateProps> = ({
-  vendors,
-  companyId,
-}) => {
-  const branches = useFlowdrStore((state) => state.store.branches);
-  const products = useFlowdrStore((state) => state.store.products);
+const EditRequisitionOrderForm: FC<EditProps> = ({ companyId, order }) => {
+  const { products, branches } = useFlowdrStore((state) => state.store);
 
-  const [orderItems, setOrderItems] = useState<RequisitionItem[]>([]);
+  const [orderItems, setOrderItems] = useState<RequisitionItem[]>(() =>
+    order.items.map((item) => ({
+      id: item.id,
+      requisition: item.requisition,
+      product_id: item.product.id,
+      quantity: item.quantity,
+      quantity_fulfilled: item.quantity_fulfilled,
+      unit_price: item.product.price,
+    }))
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof createProductSchema>>({
-    resolver: zodResolver(createProductSchema),
-    defaultValues: {
-      source: "",
-      destination: "",
-      status: "PENDING",
-      deliveryDate: new Date(),
-      notes: "",
-    },
-  });
-
   const router = useRouter();
+
+  const form = useForm<z.infer<typeof requisitionSchema>>({
+    resolver: zodResolver(requisitionSchema),
+    defaultValues: {
+      source: order.source_branch,
+      destination: order.destination_branch,
+      status: order.status,
+      deliveryDate: new Date(),
+      notes: order.notes,
+    },
+    mode: "onChange",
+  });
 
   const addOrderItem = (newItem: RequisitionItem) => {
     setOrderItems((prev) => [...prev, newItem]);
@@ -104,9 +102,9 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
     }, 0);
   };
 
-  const onSubmit = async (values: z.infer<typeof createProductSchema>) => {
+  const onSubmit = async (values: z.infer<typeof requisitionSchema>) => {
     try {
-      const order = {
+      const updatedOrder = {
         source_branch: values.source,
         destination_branch: values.destination,
         status: values.status,
@@ -114,17 +112,21 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
         items: [...orderItems],
       };
 
-      const res = await createRequisitionOrder(companyId, order);
+      const res = await updateRequisitionOrder(
+        companyId,
+        order.id,
+        updatedOrder
+      );
 
       if (res.error === "0") {
-        toast.success("Success", { description: res.message });
+        toast.success("Success", { description: "Order updated successfully" });
         router.replace(`/company/${companyId}/orders/requisition`);
       } else {
-        toast.error("Failed!", { description: res.message });
+        toast.error("Update Failed!", { description: res.message });
       }
     } catch (error) {
       console.log(error);
-      toast.error("Creation Failed!", {
+      toast.error("Update Failed!", {
         description: "Server error, try again later!",
       });
     }
@@ -282,12 +284,17 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
                       <TableHeader>
                         <TableRow>
                           <TableHead>Product</TableHead>
-                          <TableHead className="text-right">Quantity</TableHead>
+                          <TableHead className="text-center">
+                            Quantity
+                          </TableHead>
+                          <TableHead className="text-center">
+                            Fulfilled Qty
+                          </TableHead>
                           <TableHead className="text-right">
                             Unit Price
                           </TableHead>
                           <TableHead className="text-right">Total</TableHead>
-                          <TableHead className="w-[80px]"></TableHead>
+                          <TableHead className="w-[100px]"></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -295,6 +302,49 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
                           const product = products.find(
                             (p) => p.id === item.product_id
                           );
+
+                          const updateQuantity = (
+                            productId: string,
+                            change: number
+                          ) => {
+                            setOrderItems((prev) =>
+                              prev.map((item) =>
+                                item.product_id === productId
+                                  ? {
+                                      ...item,
+                                      quantity: Math.max(
+                                        1,
+                                        item.quantity + change
+                                      ),
+                                    }
+                                  : item
+                              )
+                            );
+                          };
+
+                          const updateFulfilledQuantity = (
+                            productId: string,
+                            change: number
+                          ) => {
+                            setOrderItems((prev) =>
+                              prev.map((item) => {
+                                if (item.product_id === productId) {
+                                  const newFulfilled = Math.max(
+                                    0,
+                                    Math.min(
+                                      item.quantity,
+                                      item.quantity_fulfilled + change
+                                    )
+                                  );
+                                  return {
+                                    ...item,
+                                    quantity_fulfilled: newFulfilled,
+                                  };
+                                }
+                                return item;
+                              })
+                            );
+                          };
 
                           return (
                             <TableRow key={item.product_id}>
@@ -308,9 +358,76 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right font-medium">
-                                {item.quantity}
+
+                              {/* Quantity with +/- buttons */}
+                              <TableCell>
+                                <div className="flex items-center justify-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() =>
+                                      updateQuantity(item.product_id, -1)
+                                    }
+                                    disabled={item.quantity <= 1}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+                                  <span className="font-medium w-8 text-center">
+                                    {item.quantity}
+                                  </span>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() =>
+                                      updateQuantity(item.product_id, 1)
+                                    }
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                </div>
                               </TableCell>
+
+                              {/* Fulfilled Quantity with +/- buttons */}
+                              <TableCell>
+                                <div className="flex items-center justify-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() =>
+                                      updateFulfilledQuantity(
+                                        item.product_id,
+                                        -1
+                                      )
+                                    }
+                                    disabled={item.quantity_fulfilled <= 0}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+                                  <span className="font-medium w-8 text-center">
+                                    {item.quantity_fulfilled}
+                                  </span>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() =>
+                                      updateFulfilledQuantity(
+                                        item.product_id,
+                                        1
+                                      )
+                                    }
+                                    disabled={
+                                      item.quantity_fulfilled >= item.quantity
+                                    }
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+
                               <TableCell className="text-right">
                                 ${parseFloat(item.unit_price).toFixed(2)}
                               </TableCell>
@@ -373,16 +490,36 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
           </Card>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t">
+          <div className="flex justify-between gap-3 pt-6 border-t">
             <Button
-              type="submit"
-              disabled={orderItems.length === 0 || form.formState.isSubmitting}
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
             >
-              Create Purchase Order{" "}
-              {form.formState.isSubmitting && (
-                <Rotate3DIcon className="h-4 w-4 animate-spin" />
-              )}
+              Cancel
             </Button>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => form.reset()}
+              >
+                Reset Changes
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  orderItems.length === 0 || form.formState.isSubmitting
+                }
+                className="gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Update Order
+                {form.formState.isSubmitting && (
+                  <Rotate3DIcon className="h-4 w-4 animate-spin" />
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>
@@ -397,3 +534,5 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
     </div>
   );
 };
+
+export default EditRequisitionOrderForm;

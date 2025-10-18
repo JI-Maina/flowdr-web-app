@@ -1,5 +1,20 @@
+import { FC } from "react";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  Package,
+  User,
+  UserCheck,
+  XCircle,
+} from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EditOrderButton } from "@/components/orders/edit-order";
+import { fetchRequisitionOrder } from "@/data/orders/get-orders";
+import { TransferCard } from "@/components/orders/requisition/transfer-card";
 import {
   Card,
   CardContent,
@@ -15,21 +30,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchRequisitionOrder } from "@/data/orders/get-orders";
-import {
-  ArrowLeft,
-  CheckCircle,
-  Clock,
-  Edit,
-  Package,
-  Plus,
-  Truck,
-  User,
-  UserCheck,
-  XCircle,
-} from "lucide-react";
-import Link from "next/link";
-import { FC } from "react";
 
 type ItemsProps = {
   params: Promise<{ orderId: string; companyId: string }>;
@@ -104,49 +104,19 @@ const RequisitionItemsPage: FC<ItemsProps> = async ({ params }) => {
             <StatusIcon className="h-3 w-3" />
             {order.status}
           </Badge>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
+
+          <EditOrderButton
+            path={`/company/${companyId}/orders/requisition/${orderId}/edit`}
+          />
         </div>
       </div>
 
       {/* Order Details Section */}
       <Card>
-        {/* <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Requisition Details
-          </CardTitle>
-          <CardDescription>
-            Transfer details and fulfillment information
-          </CardDescription>
-        </CardHeader> */}
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Transfer Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-muted-foreground">
-                TRANSFER
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="text-center">
-                    <div className="text-sm font-medium">From</div>
-                    <div className="text-lg font-bold">
-                      {order.source_branch}
-                    </div>
-                  </div>
-                  <Truck className="h-5 w-5 text-muted-foreground" />
-                  <div className="text-center">
-                    <div className="text-sm font-medium">To</div>
-                    <div className="text-lg font-bold">
-                      {order.destination_branch}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TransferCard order={order} />
 
             {/* Fulfillment Stats */}
             <div className="space-y-4">
@@ -190,10 +160,10 @@ const RequisitionItemsPage: FC<ItemsProps> = async ({ params }) => {
                 <UserCheck className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <div className="font-medium">
-                    {order.approved_by.username}
+                    {order.approved_by?.username}
                   </div>
                   <div className="text-sm text-muted-foreground capitalize">
-                    {order.approved_by.role}
+                    {order.approved_by?.role}
                   </div>
                 </div>
               </div>
@@ -222,11 +192,6 @@ const RequisitionItemsPage: FC<ItemsProps> = async ({ params }) => {
               <Package className="h-5 w-5" />
               <CardTitle>Requisition Items</CardTitle>
             </div>
-
-            <Button size="sm" variant={"outline"} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Item
-            </Button>
           </div>
           <CardDescription>
             Products being transferred between branches
@@ -243,7 +208,6 @@ const RequisitionItemsPage: FC<ItemsProps> = async ({ params }) => {
                 <TableHead className="text-right">Pending</TableHead>
                 <TableHead>SKU</TableHead>
                 <TableHead>Fulfillment</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -322,26 +286,6 @@ const RequisitionItemsPage: FC<ItemsProps> = async ({ params }) => {
                         <span className="text-xs text-muted-foreground min-w-[35px]">
                           {fulfillmentRate.toFixed(0)}%
                         </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          title="Edit item"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          title="Remove item"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
