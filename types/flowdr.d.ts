@@ -1,4 +1,18 @@
 // types.ts
+export interface Country {
+  code: string;
+  name: string;
+  alpha_2: string;
+  alpha_3: string;
+}
+
+export interface Currency {
+  numeric_code: string;
+  currency: string;
+  alpha_code: string;
+  symbol: string;
+}
+
 export interface Branch {
   id: string;
   name: string;
