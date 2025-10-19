@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 // import { useRouter } from "next/navigation";
 // import { Button } from "@/components/ui/button";
 import { useFlowdrStore } from "@/store/store";
-import { VoucherModal } from "@/components/orders/voucher-modal";
+import { VoucherModal } from "@/components/orders/modals/voucher-modal";
 
 export const billColumns: ColumnDef<Bill>[] = [
   {

@@ -4,7 +4,7 @@ import { Calendar, User, DollarSign, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/common/back-button";
 import { fetchPurchaseOrder } from "@/data/orders/get-orders";
-import { EditOrderButton } from "@/components/orders/edit-order";
+import { EditOrderButton } from "@/components/orders/btns/edit-btn";
 import {
   Card,
   CardContent,

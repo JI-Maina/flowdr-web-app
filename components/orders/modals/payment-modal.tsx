@@ -6,18 +6,19 @@ import { format } from "date-fns";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, CreditCard, Rotate3DIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Bill } from "@/types/flowdr";
-import { Calendar } from "../ui/calendar";
-import { createVoucher } from "@/data/payments/create-pay";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import { Invoice } from "@/types/flowdr";
+import { Calendar } from "../../ui/calendar";
+import { useFlowdrStore } from "@/store/store";
+import { createPayment } from "@/data/payments/create-pay";
 import { fetchAccounts } from "@/data/accounts/get-accounts";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 import {
   Form,
   FormControl,
@@ -34,16 +35,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "../../ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
 
-type PayProps = { bill: Bill; companyId: string };
+type PayProps = { invoice: Invoice; companyId: string };
 
 const PAY_METHOD = [
   "CASH",
@@ -52,7 +53,6 @@ const PAY_METHOD = [
   "DEBIT_CARD",
   "MOBILE_MONEY",
   "CHECK",
-  "OTHER",
 ];
 
 const paySchema = z.object({
@@ -65,10 +65,12 @@ const paySchema = z.object({
   }),
 });
 
-export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
+export const PaymentModal: FC<PayProps> = ({ invoice, companyId }) => {
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
+  const branchId = useFlowdrStore((state) => state.store.branchId);
+  const queryClient = useQueryClient();
 
   const { data: accounts } = useQuery({
     queryKey: ["accounts", companyId],
@@ -79,7 +81,7 @@ export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
   const form = useForm<z.infer<typeof paySchema>>({
     resolver: zodResolver(paySchema),
     defaultValues: {
-      amount: bill.balance,
+      amount: invoice.balance,
       refNumber: "",
       method: "",
       account: "",
@@ -90,21 +92,22 @@ export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
   const onSubmit = async (values: z.infer<typeof paySchema>) => {
     try {
       const payment = {
-        bill: bill.id,
-        amount_paid: values.amount,
         method: values.method,
         account: values.account,
-        reference_number: values.refNumber,
+        amount: values.amount,
         payment_date: new Date(values.payDate).toISOString().split("T")[0],
+        reference_number: values.refNumber,
+        notes: "",
       };
 
-      const res = await createVoucher(companyId, bill.id, payment);
+      const res = await createPayment(branchId, invoice.id, payment);
+
+      console.log(res);
 
       if (res.error === "0") {
         toast.success("Success", {
           description: res.message || "Payment made successfully",
         });
-        router.refresh();
       } else {
         toast.error("Failed!", {
           description: res.message || "Failed to make payment",
@@ -117,6 +120,7 @@ export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
       });
     } finally {
       setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["invoices", branchId] });
     }
   };
 
@@ -134,9 +138,9 @@ export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
             <DialogTitle>Process Payment</DialogTitle>
           </div>
           <DialogDescription>
-            Complete your payment for bill{" "}
-            <span className="font-medium">{bill.id}</span> totaling{" "}
-            <span className="font-medium">${bill.balance}</span>.
+            Complete your payment for invoice{" "}
+            <span className="font-medium">{invoice.invoice_number}</span>{" "}
+            totaling <span className="font-medium">${invoice.balance}</span>.
           </DialogDescription>
         </DialogHeader>
 

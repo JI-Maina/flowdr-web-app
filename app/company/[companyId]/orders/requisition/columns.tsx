@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { RequisitionOrder } from "@/types/flowdr";
-import { DeleteOrderModal } from "@/components/orders/delete-order";
+import { DeleteOrderModal } from "@/components/orders/modals/delete-modal";
 
 export const columns: ColumnDef<RequisitionOrder>[] = [
   {

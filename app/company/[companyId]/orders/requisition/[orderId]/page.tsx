@@ -12,7 +12,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EditOrderButton } from "@/components/orders/edit-order";
+import { EditOrderButton } from "@/components/orders/btns/edit-btn";
 import { fetchRequisitionOrder } from "@/data/orders/get-orders";
 import { TransferCard } from "@/components/orders/requisition/transfer-card";
 import {

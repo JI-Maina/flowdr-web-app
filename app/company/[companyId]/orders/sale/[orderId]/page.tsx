@@ -3,7 +3,7 @@ import { Calendar, ShoppingCart, Truck, User } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { fetchSaleOrder } from "@/data/orders/get-orders";
-import { EditOrderButton } from "@/components/orders/edit-order";
+import { EditOrderButton } from "@/components/orders/btns/edit-btn";
 import {
   Card,
   CardContent,

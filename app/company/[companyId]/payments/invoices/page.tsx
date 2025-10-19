@@ -27,7 +27,7 @@ const InvoicesPage = () => {
   }, [branches]);
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["inventory", branch],
+    queryKey: ["invoices", branch],
     queryFn: () => fetchInvoices(branch),
     enabled: !!branch,
   });

@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { OrderButton } from "./order-btn";
+import { OrderButton } from "./btns/order-btn";
 
 export const OrdersHeader = () => {
   const { store, updateBranchId } = useFlowdrStore((state) => state);

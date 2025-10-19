@@ -5,7 +5,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Invoice } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
-import { PaymentModal } from "@/components/orders/payment-modal";
+import { PaymentModal } from "@/components/orders/modals/payment-modal";
+import { ReceiptModal } from "@/components/orders/modals/receipt-modal";
 
 export const invoiceColumns: ColumnDef<Invoice>[] = [
   {
@@ -169,7 +170,11 @@ const ActionButtons = ({ invoice }: { invoice: Invoice }) => {
           </Button> */}
 
       {/* Pay Button - Only show if balance remains */}
-      {!isPaid && <PaymentModal invoice={invoice} companyId={companyId} />}
+      {isPaid ? (
+        <ReceiptModal invoice={invoice} />
+      ) : (
+        <PaymentModal invoice={invoice} companyId={companyId} />
+      )}
     </div>
   );
 };

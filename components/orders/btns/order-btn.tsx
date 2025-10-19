@@ -4,7 +4,7 @@ import React from "react";
 import { Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 export const OrderButton = () => {
   const router = useRouter();

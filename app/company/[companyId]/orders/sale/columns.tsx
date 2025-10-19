@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { SaleOrder } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DeleteOrderModal } from "@/components/orders/delete-order";
+import { DeleteOrderModal } from "@/components/orders/modals/delete-modal";
 
 export const columns: ColumnDef<SaleOrder>[] = [
   {

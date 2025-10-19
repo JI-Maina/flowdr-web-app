@@ -1,23 +1,23 @@
 "use client";
 
 import React, { FC } from "react";
-import { Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { BadgeDollarSignIcon } from "lucide-react";
 
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
-export const EditOrderButton: FC<{ path: string }> = ({ path }) => {
+export const OrderPaymentButton: FC<{ path: string }> = ({ path }) => {
   const router = useRouter();
 
   return (
     <Button
       size="sm"
-      variant={"outline"}
+      variant={"destructive"}
       className="gap-2"
       onClick={() => router.push(path)}
     >
-      <Edit className="h-4 w-4" />
-      Edit
+      <BadgeDollarSignIcon className="h-4 w-4" />
+      Pay
     </Button>
   );
 };

@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { columns } from "./columns";
 import { RequisitionTable } from "./orders-table";
-import { OrderButton } from "@/components/orders/order-btn";
+import { OrderButton } from "@/components/orders/btns/order-btn";
 import { fetchRequisitionOrders } from "@/data/orders/get-orders";
 
 type RequisitionProps = {

@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { columns } from "./columns";
 import { PurchaseTable } from "./purchase-table";
-import { OrderButton } from "@/components/orders/order-btn";
+import { OrderButton } from "@/components/orders/btns/order-btn";
 import { fetchPurchaseOrders } from "@/data/orders/get-orders";
 
 type PurchaseProps = {
