@@ -13,10 +13,9 @@ import { CalendarIcon, CreditCard, Rotate3DIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Invoice } from "@/types/flowdr";
+import { Bill } from "@/types/flowdr";
 import { Calendar } from "../ui/calendar";
-import { useFlowdrStore } from "@/store/store";
-import { createPayment } from "@/data/payments/create-pay";
+import { createVoucher } from "@/data/payments/create-pay";
 import { fetchAccounts } from "@/data/accounts/get-accounts";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
@@ -44,7 +43,7 @@ import {
   SelectValue,
 } from "../ui/select";
 
-type PayProps = { invoice: Invoice; companyId: string };
+type PayProps = { bill: Bill; companyId: string };
 
 const PAY_METHOD = [
   "CASH",
@@ -53,6 +52,7 @@ const PAY_METHOD = [
   "DEBIT_CARD",
   "MOBILE_MONEY",
   "CHECK",
+  "OTHER",
 ];
 
 const paySchema = z.object({
@@ -65,11 +65,10 @@ const paySchema = z.object({
   }),
 });
 
-export const PaymentModal: FC<PayProps> = ({ invoice, companyId }) => {
+export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
-  const branchId = useFlowdrStore((state) => state.store.branchId);
 
   const { data: accounts } = useQuery({
     queryKey: ["accounts", companyId],
@@ -80,7 +79,7 @@ export const PaymentModal: FC<PayProps> = ({ invoice, companyId }) => {
   const form = useForm<z.infer<typeof paySchema>>({
     resolver: zodResolver(paySchema),
     defaultValues: {
-      amount: invoice.balance,
+      amount: bill.balance,
       refNumber: "",
       method: "",
       account: "",
@@ -91,15 +90,15 @@ export const PaymentModal: FC<PayProps> = ({ invoice, companyId }) => {
   const onSubmit = async (values: z.infer<typeof paySchema>) => {
     try {
       const payment = {
+        bill: bill.id,
+        amount_paid: values.amount,
         method: values.method,
         account: values.account,
-        amount: values.amount,
-        payment_date: new Date(values.payDate).toISOString().split("T")[0],
         reference_number: values.refNumber,
-        notes: "",
+        payment_date: new Date(values.payDate).toISOString().split("T")[0],
       };
 
-      const res = await createPayment(branchId, invoice.id, payment);
+      const res = await createVoucher(companyId, bill.id, payment);
 
       if (res.error === "0") {
         toast.success("Success", {
@@ -135,9 +134,9 @@ export const PaymentModal: FC<PayProps> = ({ invoice, companyId }) => {
             <DialogTitle>Process Payment</DialogTitle>
           </div>
           <DialogDescription>
-            Complete your payment for invoice{" "}
-            <span className="font-medium">{invoice.invoice_number}</span>{" "}
-            totaling <span className="font-medium">${invoice.balance}</span>.
+            Complete your payment for bill{" "}
+            <span className="font-medium">{bill.id}</span> totaling{" "}
+            <span className="font-medium">${bill.balance}</span>.
           </DialogDescription>
         </DialogHeader>
 

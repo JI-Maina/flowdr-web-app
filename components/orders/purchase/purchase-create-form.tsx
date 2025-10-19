@@ -81,7 +81,7 @@ const createProductSchema = z.object({
   vendor: z.string(),
   status: z.enum(status),
   deliveryDate: z.date().refine((val) => !!val, {
-    message: "Match date is required.",
+    message: "Delivery date is required.",
   }),
   notes: z.string(),
 });

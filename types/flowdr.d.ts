@@ -240,3 +240,26 @@ export interface BankAccount {
   updated_at: string;
   description: string;
 }
+
+export interface InvoiceItem {
+  id: string;
+  product: string;
+  quantity: number;
+  unit_price: string;
+  total_price: string;
+}
+
+export interface Invoice {
+  id: string;
+  order: string;
+  due_date: string;
+  status: string;
+  total_amount: number;
+  total_paid: number;
+  balance: number;
+  invoice_number: string;
+  created_at: string;
+  updated_at: string;
+  notes: string;
+  items: InvoiceItem[];
+}

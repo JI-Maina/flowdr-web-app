@@ -1,22 +1,14 @@
 "use client";
 
-import { Bill } from "@/types/flowdr";
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CreditCard, Eye, MoreHorizontal, Wallet } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
+import { ColumnDef } from "@tanstack/react-table";
+
+import { Bill } from "@/types/flowdr";
+import { Badge } from "@/components/ui/badge";
+// import { useRouter } from "next/navigation";
+// import { Button } from "@/components/ui/button";
 import { useFlowdrStore } from "@/store/store";
-import { PaymentModal } from "@/components/orders/payment-modal";
+import { VoucherModal } from "@/components/orders/voucher-modal";
 
 export const billColumns: ColumnDef<Bill>[] = [
   {
@@ -233,7 +225,7 @@ const ActionButtons = ({ bill }: { bill: Bill }) => {
           </Button> */}
 
       {/* Pay Button - Only show if balance remains */}
-      {!isFullyPaid && <PaymentModal bill={bill} companyId={companyId} />}
+      {!isFullyPaid && <VoucherModal bill={bill} companyId={companyId} />}
     </div>
   );
 };
