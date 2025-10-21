@@ -277,3 +277,31 @@ export interface Invoice {
   notes: string;
   items: InvoiceItem[];
 }
+
+export interface Payment {
+  id: string;
+  invoice: string;
+  method: string;
+  account: string;
+  amount: string;
+  payment_date: string;
+  reference_number: string;
+  status: string;
+  notes: string;
+}
+
+export interface ReceiptItem {
+  receipt: string;
+  invoice_item: string;
+  amount_covered: string;
+}
+
+export interface Receipt {
+  invoice: string;
+  receipt_number: string;
+  total_amount: string;
+  issued_date: string;
+  status: string;
+  payments: Payment[];
+  items: ReceiptItem[];
+}

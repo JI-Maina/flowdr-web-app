@@ -1,4 +1,13 @@
+import React, { FC, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { EyeIcon, FileText, Receipt, ExternalLink } from "lucide-react";
+
+import { Invoice } from "@/types/flowdr";
+import { Badge } from "@/components/ui/badge";
+import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { fetchInvoiceReceipt } from "@/data/payments/get-pay";
 import {
   Dialog,
   DialogContent,
@@ -7,14 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { fetchInvoiceReceipt } from "@/data/payments/get-pay";
-import { useFlowdrStore } from "@/store/store";
-import { Invoice } from "@/types/flowdr";
-import { useQuery } from "@tanstack/react-query";
-import { EyeIcon, FileText, Receipt, ExternalLink } from "lucide-react";
-import React, { FC, useState } from "react";
 
 export const ReceiptModal: FC<{ invoice: Invoice }> = ({ invoice }) => {
   const [open, setOpen] = useState(false);

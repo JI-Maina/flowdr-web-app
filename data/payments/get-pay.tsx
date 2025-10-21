@@ -1,12 +1,12 @@
 "use server";
 
 import { getToken } from "@/actions/auth-action";
-import { PurchaseOrder } from "@/types/flowdr";
+import { Receipt } from "@/types/flowdr";
 
 export const fetchInvoiceReceipt = async (
   branchId: string,
   invoiceId: string
-): Promise<PurchaseOrder[]> => {
+): Promise<Receipt[]> => {
   try {
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;

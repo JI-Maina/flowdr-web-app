@@ -32,7 +32,7 @@ export const fetchCountries = async (): Promise<Country[]> => {
   try {
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
-
+    console.log(`${url}/api/countries/`);
     const res = await fetch(`${url}/api/countries/`, {
       method: "GET",
       headers: {
