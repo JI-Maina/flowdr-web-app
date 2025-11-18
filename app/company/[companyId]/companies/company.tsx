@@ -1,11 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { FC, use } from "react";
 import { Pencil, Plus, Building, MapPin } from "lucide-react";
 
-import { Company } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Company, Country, Currency } from "@/types/flowdr";
+import { EditCompanyModal } from "@/components/company/edit-company";
 import {
   Card,
   CardContent,
@@ -14,8 +15,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const Companies = ({ data }: { data: Promise<Company[]> }) => {
-  const company = use(data)[0];
+type CompProps = { data: Promise<[Company[], Country[], Currency[]]> };
+
+const Companies: FC<CompProps> = ({ data }) => {
+  const [companies, countries, currencies] = use(data);
+
+  const company = companies[0];
 
   return (
     <main className="container mx-auto p-6 space-y-6">
@@ -42,10 +47,12 @@ const Companies = ({ data }: { data: Promise<Company[]> }) => {
                 </p>
               </div>
             </div>
-            <Button onClick={() => console.log("edit")}>
-              <Pencil className="w-4 h-4 mr-2" />
-              Edit Company
-            </Button>
+
+            <EditCompanyModal
+              company={company}
+              currencies={currencies}
+              countries={countries}
+            />
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

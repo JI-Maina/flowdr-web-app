@@ -57,16 +57,20 @@ const ProductCreateForm = ({ companyId }: { companyId: string }) => {
       category: values.category,
       name: values.product,
       description: values.description || "",
-      image: values.image,
       price: values.price.toString(),
       is_price_fixed: values.priceType === "fixed" ? true : false,
       sku_number: values.skuNumber,
       vat: values.vat as string,
     };
 
-    try {
-      const res = await createProducts(companyId, productData);
+    const payload = {
+      ...productData,
+      image: (values as any).image ?? null,
+    };
 
+    try {
+      const res = await createProducts(companyId, payload);
+      console.log(res);
       if (res.error === "0") {
         toast.success("Product created", { description: res.message });
         router.replace(`/company/${res.product.company}/products`);

@@ -1,8 +1,9 @@
-import BackButton from "@/components/common/back-button";
-import { CreateSaleOrderForm } from "@/components/orders/sale/create-sale-order";
-import { Button } from "@/components/ui/button";
-import { fetchClients } from "@/data/users/get-users";
 import React, { FC } from "react";
+
+import { fetchClients } from "@/data/users/get-users";
+import BackButton from "@/components/common/back-button";
+import CreateClientsModal from "@/components/users/create-clients";
+import { CreateSaleOrderForm } from "@/components/orders/sale/create-sale-order";
 
 type AddProps = {
   params: Promise<{ companyId: string }>;
@@ -26,7 +27,7 @@ const AddSaleOrderPage: FC<AddProps> = async ({ params }) => {
         </div>
 
         <div className="">
-          <Button>Add client</Button>
+          <CreateClientsModal />
         </div>
       </header>
 

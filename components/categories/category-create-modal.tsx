@@ -76,7 +76,7 @@ const CategoryCreateModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="text-xs h-8 px-2">
+        <Button type="button" size="sm" className="text-xs h-8 px-2">
           <Plus className="h-3 w-3 mr-1" />
           Add Category
         </Button>
@@ -90,80 +90,79 @@ const CategoryCreateModal = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="space-y-4 py-4">
-              <FormField
-                name="categoryName"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category Name</FormLabel>
+          <div className="space-y-4 py-4">
+            <FormField
+              name="categoryName"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category Name</FormLabel>
 
-                    <FormControl>
-                      <Input placeholder="Enter category name" {...field} />
-                    </FormControl>
+                  <FormControl>
+                    <Input placeholder="Enter category name" {...field} />
+                  </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                name="productType"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product Type</FormLabel>
+            <FormField
+              name="productType"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Product Type</FormLabel>
 
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={"product"}
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={"product"}
+                  >
+                    <SelectTrigger
+                      id="price-type"
+                      className="focus-visible:ring-2 focus-visible:ring-blue-500"
                     >
-                      <SelectTrigger
-                        id="price-type"
-                        className="focus-visible:ring-2 focus-visible:ring-blue-500"
-                      >
-                        <SelectValue placeholder="Select price type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="product">Product</SelectItem>
-                        <SelectItem value="service">Service</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
+                      <SelectValue placeholder="Select price type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="product">Product</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                name="branch"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Branch</FormLabel>
+            <FormField
+              name="branch"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Branch</FormLabel>
 
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={branches[0]?.id}
-                    >
-                      <SelectTrigger id="branch">
-                        <SelectValue placeholder="Select branch" />
-                      </SelectTrigger>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={branches[0]?.id}
+                  >
+                    <SelectTrigger id="branch">
+                      <SelectValue placeholder="Select branch" />
+                    </SelectTrigger>
 
-                      <SelectContent>
-                        {branches.map((branch) => (
-                          <SelectItem key={branch.id} value={branch.id}>
-                            {branch.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <SelectContent>
+                      {branches.map((branch) => (
+                        <SelectItem key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* <div className="space-y-2 mb-6">
+            {/* <div className="space-y-2 mb-6">
                 <Label htmlFor="description" className="text-sm font-medium">
                   Description
                 </Label>
@@ -173,20 +172,27 @@ const CategoryCreateModal = () => {
                   // defaultValue={product?.description || ""}
                 />
               </div> */}
-            </div>
+          </div>
 
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button disabled={form.formState.isSubmitting} type="submit">
-                {form.formState.isSubmitting && (
-                  <Rotate3D className="w-4 h-4 animate-spin" />
-                )}{" "}
-                Add Category
-              </Button>
-            </div>
-          </form>
+          <div className="flex justify-end space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              {form.formState.isSubmitting && (
+                <Rotate3D className="w-4 h-4 animate-spin" />
+              )}{" "}
+              Add Category
+            </Button>
+          </div>
         </Form>
       </DialogContent>
     </Dialog>

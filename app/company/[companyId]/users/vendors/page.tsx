@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { fetchVendors } from "@/data/users/get-users";
-import { Plus } from "lucide-react";
 import React, { FC } from "react";
-import { VendorsTable } from "./data-table";
+
 import { vendorColumns } from "./columns";
+import { VendorsTable } from "./data-table";
+import { fetchVendors } from "@/data/users/get-users";
+import CreateVendorModal from "@/components/users/create-vendor-modal";
 
 type VendorProps = {
   params: Promise<{ companyId: string }>;
@@ -16,20 +16,13 @@ const VendorsPage: FC<VendorProps> = async ({ params }) => {
 
   return (
     <main className="container mx-auto p-4 space-y-6">
-      <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <header className="flex flex-row items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Vendors</h1>
           <p className="text-muted-foreground">Vendors</p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex gap-2">
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Client
-            </Button>
-          </div>
-        </div>
+        <CreateVendorModal />
       </header>
 
       <VendorsTable data={data} columns={vendorColumns} />

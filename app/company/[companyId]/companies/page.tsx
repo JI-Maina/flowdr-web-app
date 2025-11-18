@@ -1,10 +1,18 @@
 import { Suspense } from "react";
 
-import { fetchCompany } from "@/data/company/get-companies";
+import {
+  fetchCompany,
+  fetchCountries,
+  fetchCurrencies,
+} from "@/data/company/get-companies";
 import Companies from "./company";
 
 const CompaniesPage = () => {
-  const dataPromise = fetchCompany();
+  const dataPromise = Promise.all([
+    fetchCompany(),
+    fetchCountries(),
+    fetchCurrencies(),
+  ]);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

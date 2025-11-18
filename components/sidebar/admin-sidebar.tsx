@@ -129,11 +129,11 @@ export const AdminSidebar = memo(() => {
           icon: Users,
           href: `/company/${companyId}/users/customers`,
         },
-        {
-          title: "Staffs",
-          icon: UserCog,
-          href: `/company/${companyId}/users/staffs`,
-        },
+        // {
+        //   title: "Staffs",
+        //   icon: UserCog,
+        //   href: `/company/${companyId}/users/staffs`,
+        // },
         {
           title: "Vendors",
           icon: Building,

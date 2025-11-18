@@ -19,7 +19,7 @@ import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { useFlowdrStore } from "@/store/store";
 import { Country, Currency } from "@/types/flowdr";
-import { createCompany } from "@/data/company/create-company";
+import { createCompany } from "@/actions/company-actions";
 import {
   Form,
   FormControl,
@@ -35,31 +35,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { companySchema } from "@/lib/schemas";
 
 type CompProps = {
   currencies: Currency[];
   countries: Country[];
 };
-
-const companySchema = z.object({
-  company: z
-    .string()
-    .min(1, "Company name is required")
-    .min(2, "Company name must be at least 2 characters"),
-  description: z.string(),
-  country: z.string().min(1, "Please select a country"),
-  city: z
-    .string()
-    .min(1, "City is required")
-    .min(2, "City must be at least 2 characters"),
-  currency: z.string().min(1, "Please select a currency"),
-  image: z
-    .instanceof(File)
-    .nullable()
-    .refine((file) => {
-      return file !== null;
-    }, "Company logo is required"),
-});
 
 export const CreateCompanyForm: FC<CompProps> = ({ currencies, countries }) => {
   const router = useRouter();
@@ -92,7 +73,7 @@ export const CreateCompanyForm: FC<CompProps> = ({ currencies, countries }) => {
 
       if (res.error === "0") {
         updateUser({ ...store.user, companyId: res.data.id });
-        toast.success("Product created", { description: res.message });
+        toast.success("Company created", { description: res.message });
         router.replace(`/company/${res.data.id}`);
       } else {
         toast.error("Creation Failed!", { description: res.message });

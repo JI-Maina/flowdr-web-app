@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { fetchVendors } from "@/data/users/get-users";
 import BackButton from "@/components/common/back-button";
 import { CreatePurchaseOrderForm } from "@/components/orders/purchase/purchase-create-form";
+import CreateVendorModal from "@/components/users/create-vendor-modal";
 
 type AddProps = {
   params: Promise<{ companyId: string }>;
@@ -26,9 +27,7 @@ const AddPurchaseOrderPage: FC<AddProps> = async ({ params }) => {
           </div>
         </div>
 
-        <div className="">
-          <Button>Add vendor</Button>
-        </div>
+        <CreateVendorModal />
       </header>
 
       <section>
