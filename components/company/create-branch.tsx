@@ -99,8 +99,8 @@ export const CreateBranchModal: FC<BranchProps> = ({
       });
     } finally {
       form.reset();
-      router.refresh();
       setOpen(false);
+      setTimeout(() => router.refresh(), 300);
     }
   };
 

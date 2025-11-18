@@ -114,3 +114,31 @@ export const createBranch = async (id: string, companyData: CompanyPayload) => {
     throw error;
   }
 };
+
+export const deleteBranch = async (id: string, branchId: string) => {
+  try {
+    const token = await getToken();
+    const url = process.env.NEXT_PUBLIC_API_HOST;
+
+    const res = await fetch(
+      `${url}/api/companies/${id}/branches/${branchId}/`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to delete branch.");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.log("Error deleting branch", error);
+    throw error;
+  }
+};

@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CreateBranchModal } from "@/components/company/create-branch";
+import DeleteBranchModal from "@/components/company/delete-branch";
 
 type CompProps = { data: Promise<[Company[], Country[], Currency[]]> };
 
@@ -123,13 +124,8 @@ const Companies: FC<CompProps> = ({ data }) => {
                   >
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => console.log("delete")}
-                  >
-                    Delete
-                  </Button>
+
+                  <DeleteBranchModal branch={branch} />
                 </div>
               </div>
             </CardContent>
