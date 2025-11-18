@@ -17,6 +17,7 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { companySchema } from "@/lib/schemas";
 import { useFlowdrStore } from "@/store/store";
 import { Country, Currency } from "@/types/flowdr";
 import { createCompany } from "@/actions/company-actions";
@@ -35,7 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { companySchema } from "@/lib/schemas";
 
 type CompProps = {
   currencies: Currency[];

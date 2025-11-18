@@ -70,7 +70,7 @@ export const editCompany = async (
     }
 
     const res = await fetch(`${url}/api/companies/${id}/`, {
-      method: "PATCH",
+      method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -85,6 +85,32 @@ export const editCompany = async (
     return await res.json();
   } catch (error) {
     console.error("Error editing company details", error);
+    throw error;
+  }
+};
+
+export const createBranch = async (id: string, companyData: CompanyPayload) => {
+  try {
+    const token = await getToken();
+    const url = process.env.NEXT_PUBLIC_API_HOST;
+
+    const res = await fetch(`${url}/api/companies/${id}/branches/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(companyData),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(JSON.stringify(errorData) || "Failed to add branch.");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error adding banch to company", error);
     throw error;
   }
 };

@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CreateBranchModal } from "@/components/company/create-branch";
 
 type CompProps = { data: Promise<[Company[], Country[], Currency[]]> };
 
@@ -82,10 +83,7 @@ const Companies: FC<CompProps> = ({ data }) => {
       {/* Branches Section */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Branches</h2>
-        <Button onClick={() => console.log("add")}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Branch
-        </Button>
+        <CreateBranchModal countries={countries} currencies={currencies} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

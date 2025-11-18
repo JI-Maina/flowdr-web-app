@@ -169,3 +169,17 @@ export const companySchema = z.object({
   //     return file !== null;
   //   }, "Company logo is required"),
 });
+
+export const branchSchema = z.object({
+  branch: z
+    .string()
+    .min(1, "Branch name is required")
+    .min(2, "Branch name must be at least 2 characters"),
+  description: z.string(),
+  country: z.string().min(1, "Please select a country"),
+  city: z
+    .string()
+    .min(1, "City is required")
+    .min(2, "City must be at least 2 characters"),
+  currency: z.string().min(1, "Please select a currency"),
+});
