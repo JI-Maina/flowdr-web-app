@@ -53,7 +53,7 @@ export const createProducts = async (
     formData.append("sku_number", companyData.sku_number);
     formData.append("vat", companyData.vat);
 
-    if (companyData.image instanceof File) {
+    if (companyData.image) {
       formData.append("image", companyData.image, companyData.image.name);
     }
 
@@ -64,7 +64,7 @@ export const createProducts = async (
       },
       body: formData,
     });
-    console.log("res", res);
+
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       console.log("errorData", errorData);

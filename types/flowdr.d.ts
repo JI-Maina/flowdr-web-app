@@ -109,6 +109,7 @@ export interface ProductPayload {
   category: string;
   name: string;
   description: string;
+  image?: string;
   price: string;
   is_price_fixed: boolean;
   sku_number: string;
