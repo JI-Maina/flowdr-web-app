@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { CreateBranchModal } from "@/components/company/create-branch";
 import DeleteBranchModal from "@/components/company/delete-branch";
+import { EditBranchModal } from "@/components/company/edit-branch";
 
 type CompProps = { data: Promise<[Company[], Country[], Currency[]]> };
 
@@ -117,13 +118,11 @@ const Companies: FC<CompProps> = ({ data }) => {
                   Created: {new Date(branch.created_at).toLocaleDateString()}
                 </p>
                 <div className="space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => console.log("edit")}
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditBranchModal
+                    branch={branch}
+                    countries={countries}
+                    currencies={currencies}
+                  />
 
                   <DeleteBranchModal branch={branch} />
                 </div>

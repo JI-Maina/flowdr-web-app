@@ -115,6 +115,39 @@ export const createBranch = async (id: string, companyData: CompanyPayload) => {
   }
 };
 
+export const editBranch = async (
+  companyId: string,
+  branchId: string,
+  branch: CompanyPayload
+) => {
+  try {
+    const token = await getToken();
+    const url = process.env.NEXT_PUBLIC_API_HOST;
+
+    const res = await fetch(
+      `${url}/api/companies/${companyId}/branches/${branchId}/`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(branch),
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(JSON.stringify(errorData) || "Failed to edit branch.");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error editing banch", error);
+    throw error;
+  }
+};
+
 export const deleteBranch = async (id: string, branchId: string) => {
   try {
     const token = await getToken();
