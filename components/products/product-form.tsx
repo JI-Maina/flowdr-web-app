@@ -34,9 +34,6 @@ import {
 const ProductCreateForm = ({ companyId }: { companyId: string }) => {
   const { branches, categories } = useFlowdrStore((state) => state.store);
 
-  console.log("branches ", branches);
-  console.log("categories", categories);
-
   const router = useRouter();
 
   const form = useForm<z.infer<typeof productSchema>>({

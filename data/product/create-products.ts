@@ -67,13 +67,11 @@ export const createProducts = async (
 
     const result = await res.json();
 
-    console.log(result.message);
-
-    if (!res.ok) {
-      // Use the error message from your API response
-      throw new Error(result.message || `HTTP error! status: ${res.status}`);
-      // throw new Error({"message": result.message})
-    }
+    // if (!res.ok) {
+    //   // Use the error message from your API response
+    //   throw new Error(result.message || `HTTP error! status: ${res.status}`);
+    //   // throw new Error({"message": result.message})
+    // }
 
     return result;
   } catch (error) {

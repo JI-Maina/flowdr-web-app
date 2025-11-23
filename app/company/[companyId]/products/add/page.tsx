@@ -1,11 +1,5 @@
 import BackButton from "@/components/common/back-button";
 import ProductCreateForm from "@/components/products/product-form";
-// import { fetchCategories } from "@/data/category/get-category";
-// import {
-//   fetchCompany,
-//   fetchCountries,
-//   fetchCurrencies,
-// } from "@/data/company/get-companies";
 
 type AddProps = {
   params: Promise<{ companyId: string }>;
@@ -13,11 +7,6 @@ type AddProps = {
 
 const AddProductsPage = async ({ params }: AddProps) => {
   const { companyId } = await params;
-
-  // const [company, categories] = await Promise.all([
-  //   fetchCompany(),
-  //   fetchCategories(companyId),
-  // ]);
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
@@ -31,11 +20,7 @@ const AddProductsPage = async ({ params }: AddProps) => {
       </header>
 
       <section className="bg-white rounded-lg border p-6 shadow-sm">
-        <ProductCreateForm
-          companyId={companyId}
-          // branches={company[0].branches}
-          // categories={categories}
-        />
+        <ProductCreateForm companyId={companyId} />
       </section>
     </main>
   );
