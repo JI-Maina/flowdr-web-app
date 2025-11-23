@@ -34,6 +34,9 @@ import {
 const ProductCreateForm = ({ companyId }: { companyId: string }) => {
   const { branches, categories } = useFlowdrStore((state) => state.store);
 
+  console.log("branches ", branches);
+  console.log("categories", categories);
+
   const router = useRouter();
 
   const form = useForm<z.infer<typeof productSchema>>({
@@ -70,7 +73,7 @@ const ProductCreateForm = ({ companyId }: { companyId: string }) => {
 
     try {
       const res = await createProducts(companyId, payload);
-      console.log(res);
+
       if (res.error === "0") {
         toast.success("Product created", { description: res.message });
         router.replace(`/company/${res.product.company}/products`);
@@ -79,8 +82,13 @@ const ProductCreateForm = ({ companyId }: { companyId: string }) => {
       }
     } catch (error) {
       console.log(error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error ?? "Server error, try again later!");
+
       toast.error("Creation Failed!", {
-        description: "Server error, try again later!",
+        description: message,
       });
     }
   };

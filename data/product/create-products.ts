@@ -65,15 +65,17 @@ export const createProducts = async (
       body: formData,
     });
 
+    const result = await res.json();
+
+    console.log(result.message);
+
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      console.log("errorData", errorData);
-      throw new Error(
-        JSON.stringify(errorData) || "Failed to create company products."
-      );
+      // Use the error message from your API response
+      throw new Error(result.message || `HTTP error! status: ${res.status}`);
+      // throw new Error({"message": result.message})
     }
 
-    return await res.json();
+    return result;
   } catch (error) {
     console.log("Error creating products", error);
     throw error;
