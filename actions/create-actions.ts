@@ -1,9 +1,6 @@
 "use server";
 
-import { z } from "zod";
 import { getToken } from "./auth-action";
-
-// utils/api.ts or services/categoryService.ts
 
 export async function createCategory(
   id: string,
@@ -15,7 +12,7 @@ export async function createCategory(
 ) {
   const url = process.env.NEXT_PUBLIC_API_HOST;
   const token = await getToken();
-  console.log(token);
+
   if (!token) {
     throw new Error("Authentication failed: No token found.");
   }

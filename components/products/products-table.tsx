@@ -58,8 +58,8 @@ const ProductsTable = ({
     (state) => state
   );
 
-  console.log("branch ", branchesData);
-  console.log("cat ", categoriesData);
+  // console.log("branch ", branchesData);
+  // console.log("cat ", categoriesData);
 
   useEffect(() => {
     setProducts(productsData);

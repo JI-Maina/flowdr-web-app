@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Product, ProductPayload } from "@/types/flowdr";
-import { updateProduct } from "@/data/product/update-product";
+// import { updateProduct } from "@/data/product/update-product";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +37,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { editPoduct } from "@/actions/update-actions";
+// import { updateProduct } from "@/data/product/update-product";
+// import { updateProduct } from "@/data/product/create-products";
 
 const ProductEditModal = ({ product }: { product: Product }) => {
   const [open, setOpen] = useState(false);
@@ -58,7 +61,7 @@ const ProductEditModal = ({ product }: { product: Product }) => {
       priceType: product.is_price_fixed === true ? "fixed" : "negotiable",
       branch: product.branch,
       description: product.description,
-      image: product.image,
+      image: "",
     },
     mode: "onChange",
   });
@@ -70,15 +73,15 @@ const ProductEditModal = ({ product }: { product: Product }) => {
         category: values.category,
         name: values.product,
         description: values.description || "",
-        image: values.image,
+        image: values.image instanceof File ? values.image : "",
         price: values.price.toString(),
         is_price_fixed: values.priceType === "fixed" ? true : false,
         sku_number: values.skuNumber,
         vat: values.vat as string,
       };
-
-      const res = await updateProduct(product.company, product.id, productData);
-
+      console.log(productData);
+      const res = await editPoduct(product.company, product.id, productData);
+      console.log(res);
       if (res.error === "0") {
         setOpen(false);
         toast.success("Success", { description: res.message });
@@ -146,11 +149,7 @@ const ProductEditModal = ({ product }: { product: Product }) => {
                   <FormItem>
                     <FormLabel>Category</FormLabel>
 
-                    <Select
-                      // defaultValue={product?.category || ""}
-                      // value={selectedCategory}
-                      onValueChange={field.onChange}
-                    >
+                    <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="category"
                         className="focus-visible:ring-2 focus-visible:ring-blue-500"
@@ -256,78 +255,107 @@ const ProductEditModal = ({ product }: { product: Product }) => {
                   </FormItem>
                 )}
               />
+            </div>
 
-              <FormField
-                name="priceType"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price Type</FormLabel>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-1">
+                <FormField
+                  name="priceType"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price Type</FormLabel>
 
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={"fixed"}
-                    >
-                      <SelectTrigger
-                        id="price-type"
-                        className="focus-visible:ring-2 focus-visible:ring-blue-500"
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={"fixed"}
                       >
-                        <SelectValue placeholder="Select price type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fixed">Fixed Price</SelectItem>
-                        <SelectItem value="negotiable">
-                          Negotiable Price
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                        <SelectTrigger
+                          id="price-type"
+                          className="focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                          <SelectValue placeholder="Select price type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fixed">Fixed Price</SelectItem>
+                          <SelectItem value="negotiable">
+                            Negotiable Price
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              <FormField
-                name="image"
-                control={form.control}
-                render={({ field: { onChange, value, ...fieldProps } }) => (
-                  <FormItem>
-                    <FormLabel>Product Images</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0] || null;
-                          onChange(file);
-                        }}
-                        {...fieldProps}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="col-span-2">
+                <FormField
+                  name="description"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        htmlFor="description"
+                        className="text-sm font-medium"
+                      >
+                        Description
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          id="description"
+                          placeholder="Enter product description"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <FormField
-              name="description"
+              name="image"
               control={form.control}
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel
-                    htmlFor="description"
-                    className="text-sm font-medium"
-                  >
-                    Description
-                  </FormLabel>
+                  <FormLabel>Product Image</FormLabel>
+
+                  {/* Show current image preview */}
+                  {product.image && (
+                    <div className="mb-3 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-16 w-16 object-cover rounded-md border"
+                        />
+                        <div className="text-xs text-muted-foreground">
+                          <p>Current product image</p>
+                          <p>Select new image below to replace</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <FormControl>
-                    <Textarea
-                      id="description"
-                      placeholder="Enter product description"
-                      {...field}
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        onChange(file);
+                      }}
+                      {...fieldProps}
                     />
                   </FormControl>
+                  <div className="text-xs text-muted-foreground">
+                    {product.image
+                      ? "Leave empty to keep current image"
+                      : "Upload a product image"}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
