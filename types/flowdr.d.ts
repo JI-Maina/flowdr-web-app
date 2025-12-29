@@ -255,6 +255,13 @@ export interface BankAccount {
   description: string;
 }
 
+export interface AccountType {
+  id: string;
+  account_type: string;
+  name: string;
+  description: string;
+}
+
 export interface InvoiceItem {
   id: string;
   product: string;

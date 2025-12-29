@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+
+import { OrderButton } from "./btns/order-btn";
 import { useFlowdrStore } from "@/store/store";
 import {
   Select,
@@ -8,11 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { OrderButton } from "./btns/order-btn";
 
 export const OrdersHeader = () => {
   const { store, updateBranchId } = useFlowdrStore((state) => state);
   const { branchId, branches } = store;
+
+  useEffect(() => {
+    // If branchId is empty and branches exist, set to first branch
+    if (!branchId && branches.length > 0) {
+      updateBranchId(branches[0].id);
+    }
+  }, [branchId, branches, updateBranchId]);
 
   return (
     <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -25,10 +34,10 @@ export const OrdersHeader = () => {
 
       <div className="flex flex-col sm:flex-row gap-3">
         <Select
-          value={branchId}
+          value={branchId || branches[0]?.id || ""}
           onValueChange={(value) => updateBranchId(value)}
         >
-          <SelectTrigger className="w-full sm:w-[200px]">
+          <SelectTrigger className="w-full sm:w-50">
             <SelectValue placeholder="Select branch" />
           </SelectTrigger>
           <SelectContent>

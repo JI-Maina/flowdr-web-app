@@ -136,7 +136,7 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
 
       const res = await createSaleOrder(values.branch, order);
 
-      if (res.status === "success" || !res.error) {
+      if (res.error === "0") {
         toast.success("Success", {
           description: res.message || "Sale order created successfully",
         });
