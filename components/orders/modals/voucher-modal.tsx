@@ -99,6 +99,7 @@ export const VoucherModal: FC<PayProps> = ({ bill, companyId }) => {
       };
 
       const res = await createVoucher(companyId, bill.id, payment);
+      console.log(res);
 
       if (res.error === "0") {
         toast.success("Success", {

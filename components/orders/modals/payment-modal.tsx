@@ -102,8 +102,6 @@ export const PaymentModal: FC<PayProps> = ({ invoice, companyId }) => {
 
       const res = await createPayment(branchId, invoice.id, payment);
 
-      // console.log(res);
-
       if (res.error === "0") {
         toast.success("Success", {
           description: res.message || "Payment made successfully",

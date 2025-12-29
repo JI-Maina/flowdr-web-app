@@ -72,22 +72,34 @@ export const billColumns: ColumnDef<Bill>[] = [
     header: "Balance",
     cell: ({ row }) => {
       const bill = row.original;
-      const balance = bill.balance || parseFloat(bill.amount_due);
+      const amountDue = parseFloat(bill.amount_due);
+      const totalPaid = bill.total_paid || 0;
+      const balance =
+        bill.balance !== undefined
+          ? parseFloat(bill.balance.toString())
+          : amountDue - totalPaid;
+
       const isPaid = balance <= 0;
-      const hasPartialPayment = (bill.total_paid || 0) > 0 && balance > 0;
+      const isOverpaid = balance < 0;
+      const hasPartialPayment = totalPaid > 0 && balance > 0 && !isPaid;
 
       return (
         <div
           className={`text-right font-semibold ${
-            isPaid
+            isOverpaid
+              ? "text-purple-600"
+              : isPaid
               ? "text-green-600"
               : hasPartialPayment
               ? "text-orange-600"
               : "text-red-600"
           }`}
         >
-          ${balance.toFixed(2)}
-          {isPaid && (
+          ${Math.abs(balance).toFixed(2)}
+          {isOverpaid && (
+            <div className="text-xs text-purple-500 font-normal">Overpaid</div>
+          )}
+          {isPaid && !isOverpaid && (
             <div className="text-xs text-green-500 font-normal">
               Paid in full
             </div>
@@ -108,8 +120,13 @@ export const billColumns: ColumnDef<Bill>[] = [
       const bill = row.original;
       const dueDate = new Date(bill.due_date);
       const today = new Date();
-      const isOverdue =
-        dueDate < today && (bill.balance || parseFloat(bill.amount_due)) > 0;
+      const amountDue = parseFloat(bill.amount_due);
+      const totalPaid = bill.total_paid || 0;
+      const balance =
+        bill.balance !== undefined
+          ? parseFloat(bill.balance.toString())
+          : amountDue - totalPaid;
+      const isOverdue = dueDate < today && balance > 0;
 
       return (
         <div
@@ -127,10 +144,22 @@ export const billColumns: ColumnDef<Bill>[] = [
     cell: ({ row }) => {
       const bill = row.original;
       const status = bill.status;
-      const balance = bill.balance || parseFloat(bill.amount_due);
+      const amountDue = parseFloat(bill.amount_due);
+      const totalPaid = bill.total_paid || 0;
+      const balance =
+        bill.balance !== undefined
+          ? parseFloat(bill.balance.toString())
+          : amountDue - totalPaid;
 
       // Auto-calculate status based on balance if needed
-      const effectiveStatus = balance <= 0 ? "PAID" : status;
+      let effectiveStatus = status;
+      if (balance < 0) {
+        effectiveStatus = "OVERPAID";
+      } else if (balance === 0 && totalPaid > 0) {
+        effectiveStatus = "PAID";
+      } else if (balance > 0 && totalPaid > 0) {
+        effectiveStatus = "PARTIALLY_PAID";
+      }
 
       const statusConfig = {
         DRAFT: { variant: "secondary" as const, label: "Draft" },
@@ -139,6 +168,7 @@ export const billColumns: ColumnDef<Bill>[] = [
         OVERDUE: { variant: "destructive" as const, label: "Overdue" },
         PARTIALLY_PAID: { variant: "default" as const, label: "Partial" },
         PAID: { variant: "success" as const, label: "Paid" },
+        OVERPAID: { variant: "default" as const, label: "Overpaid" },
         CANCELLED: { variant: "destructive" as const, label: "Cancelled" },
       };
 
@@ -201,7 +231,12 @@ export const billColumns: ColumnDef<Bill>[] = [
 const ActionButtons = ({ bill }: { bill: Bill }) => {
   const companyId = useFlowdrStore.getState().store.user?.companyId;
 
-  const balance = bill.balance || parseFloat(bill.amount_due);
+  const amountDue = parseFloat(bill.amount_due);
+  const totalPaid = bill.total_paid || 0;
+  const balance =
+    bill.balance !== undefined
+      ? parseFloat(bill.balance.toString())
+      : amountDue - totalPaid;
   const isFullyPaid = balance <= 0;
 
   return (
@@ -224,7 +259,7 @@ const ActionButtons = ({ bill }: { bill: Bill }) => {
             <span className="sr-only">View bill</span>
           </Button> */}
 
-      {/* Pay Button - Only show if balance remains */}
+      {/* Pay Button - Only show if balance remains (not fully paid or overpaid) */}
       {!isFullyPaid && <VoucherModal bill={bill} companyId={companyId} />}
     </div>
   );
