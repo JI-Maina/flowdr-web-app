@@ -20,11 +20,11 @@ import {
   Minus,
 } from "lucide-react";
 
-import { Vendor, PurchaseOrder } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { Vendor, PurchaseOrder } from "@/types/flowdr";
 import { PurchaseItemsModal } from "./purchase-items-modal";
 // import { updatePurchaseOrder } from "@/data/orders/update-orders";
 import { updatePurchaseOrder } from "@/data/orders/update-orders";
@@ -110,6 +110,15 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
     }))
   );
 
+  // Store original delivered quantities to track changes
+  const originalDeliveredQuantities = useState<Record<string, number>>(() => {
+    const quantities: Record<string, number> = {};
+    order.items.forEach((item) => {
+      quantities[item.id] = item.delivered_quantity;
+    });
+    return quantities;
+  })[0];
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const form = useForm<z.infer<typeof editProductSchema>>({
@@ -138,6 +147,34 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
     return orderItems.reduce((total, item) => {
       return total + parseFloat(item.unit_price) * (item.order_quantity || 0);
     }, 0);
+  };
+
+  // Check if at least one item has increased delivered_quantity
+  const hasIncreasedDeliveredQuantity = () => {
+    return orderItems.some((item) => {
+      // For existing items, compare with original quantity
+      // For new items (no id or id not in original), original is 0
+      const originalQty =
+        item.id && originalDeliveredQuantities[item.id] !== undefined
+          ? originalDeliveredQuantities[item.id]
+          : 0;
+      return item.delivered_quantity > originalQty;
+    });
+  };
+
+  // Check if update should be disabled based on status and delivered quantity changes
+  const isUpdateDisabled = () => {
+    const currentStatus = form.watch("status");
+    const isRestrictedStatus =
+      currentStatus === "PARTIALLY_RECEIVED" || currentStatus === "COMPLETED";
+
+    // If status is PARTIALLY_RECEIVED or COMPLETED, require at least one increased delivered quantity
+    if (isRestrictedStatus) {
+      return !hasIncreasedDeliveredQuantity();
+    }
+
+    // For other statuses, use existing validation
+    return orderItems.length === 0 || form.formState.isSubmitting;
   };
 
   const onSubmit = async (values: z.infer<typeof editProductSchema>) => {
@@ -702,35 +739,50 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
           </Card>
 
           {/* Form Actions */}
-          <div className="flex justify-between gap-3 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
-            <div className="flex gap-3">
+          <div className="flex flex-col gap-3 pt-6 border-t">
+            {/* Validation message for restricted statuses */}
+            {(form.watch("status") === "PARTIALLY_RECEIVED" ||
+              form.watch("status") === "COMPLETED") &&
+              !hasIncreasedDeliveredQuantity() && (
+                <div className="bg-orange-50 border border-orange-200 rounded-md p-3 text-sm text-orange-800">
+                  <p className="font-medium">
+                    To update the order status to{" "}
+                    {form.watch("status") === "PARTIALLY_RECEIVED"
+                      ? "PARTIALLY_RECEIVED"
+                      : "COMPLETED"}
+                    , at least one item must have an increased delivered
+                    quantity.
+                  </p>
+                </div>
+              )}
+            <div className="flex justify-between gap-3">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => form.reset()}
+                onClick={() => router.back()}
               >
-                Reset Changes
+                Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={
-                  orderItems.length === 0 || form.formState.isSubmitting
-                }
-                className="gap-2"
-              >
-                <Save className="h-4 w-4" />
-                Update Order
-                {form.formState.isSubmitting && (
-                  <Rotate3DIcon className="h-4 w-4 animate-spin" />
-                )}
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.reset()}
+                >
+                  Reset Changes
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isUpdateDisabled()}
+                  className="gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  Update Order
+                  {form.formState.isSubmitting && (
+                    <Rotate3DIcon className="h-4 w-4 animate-spin" />
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </form>

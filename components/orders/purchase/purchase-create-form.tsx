@@ -398,6 +398,7 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
                     Add products to create your purchase order
                   </p>
                   <Button
+                    type="button"
                     onClick={() => setIsModalOpen(true)}
                     className="gap-2"
                   >
