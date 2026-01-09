@@ -1,6 +1,8 @@
 import { CreateCompanyForm } from "@/components/company/create-company";
 import { fetchCountries, fetchCurrencies } from "@/data/company/get-companies";
 
+export const dynamic = "force-dynamic";
+
 const CompanySetUpPage = async () => {
   const [countries, currencies] = await Promise.all([
     fetchCountries(),
