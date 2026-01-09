@@ -61,6 +61,7 @@ const ProductCreateForm = ({ companyId }: { companyId: string }) => {
       is_price_fixed: values.priceType === "fixed" ? true : false,
       sku_number: values.skuNumber,
       vat: values.vat as string,
+      image: (values as any).image ?? null,
     };
 
     const payload = {
