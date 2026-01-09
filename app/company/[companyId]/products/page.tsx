@@ -6,7 +6,7 @@ import { fetchCategories } from "@/data/category/get-category";
 import ProductsTable from "../../../../components/products/products-table";
 
 type Props = {
-  params: { companyId: string };
+  params: Promise<{ companyId: string }>;
 };
 
 const ProductsPage = async ({ params }: Props) => {
