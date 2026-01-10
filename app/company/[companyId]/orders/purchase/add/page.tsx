@@ -1,10 +1,10 @@
 import React, { FC } from "react";
 
-import { Button } from "@/components/ui/button";
 import { fetchVendors } from "@/data/users/get-users";
 import BackButton from "@/components/common/back-button";
-import { CreatePurchaseOrderForm } from "@/components/orders/purchase/purchase-create-form";
+import { fetchProducts } from "@/data/product/get-products";
 import CreateVendorModal from "@/components/users/create-vendor-modal";
+import { CreatePurchaseOrderForm } from "@/components/orders/purchase/purchase-create-form";
 
 type AddProps = {
   params: Promise<{ companyId: string }>;
@@ -13,7 +13,10 @@ type AddProps = {
 const AddPurchaseOrderPage: FC<AddProps> = async ({ params }) => {
   const { companyId } = await params;
 
-  const data = await fetchVendors(companyId);
+  const [vendors, products] = await Promise.all([
+    fetchVendors(companyId),
+    fetchProducts(companyId),
+  ]);
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
@@ -31,7 +34,11 @@ const AddPurchaseOrderPage: FC<AddProps> = async ({ params }) => {
       </header>
 
       <section>
-        <CreatePurchaseOrderForm companyId={companyId} vendors={data} />
+        <CreatePurchaseOrderForm
+          companyId={companyId}
+          vendors={vendors}
+          products={products}
+        />
       </section>
     </main>
   );

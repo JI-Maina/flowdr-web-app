@@ -7,7 +7,6 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
-import { useFlowdrStore } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -18,7 +17,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { Vendor } from "@/types/flowdr";
+import { Product, Vendor } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -58,6 +57,7 @@ import {
 type CreateProps = {
   vendors: Vendor[];
   companyId: string;
+  products: Product[];
 };
 
 export type Item = {
@@ -89,9 +89,8 @@ const createProductSchema = z.object({
 export const CreatePurchaseOrderForm: FC<CreateProps> = ({
   vendors,
   companyId,
+  products,
 }) => {
-  const products = useFlowdrStore((state) => state.store.products);
-
   const [orderItems, setOrderItems] = useState<Item[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -431,6 +430,7 @@ export const CreatePurchaseOrderForm: FC<CreateProps> = ({
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
         existingItems={orderItems}
+        products={products}
       />
     </div>
   );

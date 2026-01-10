@@ -2,6 +2,7 @@ import React, { FC } from "react";
 
 import { fetchClients } from "@/data/users/get-users";
 import BackButton from "@/components/common/back-button";
+import { fetchProducts } from "@/data/product/get-products";
 import CreateClientsModal from "@/components/users/create-clients";
 import { CreateSaleOrderForm } from "@/components/orders/sale/create-sale-order";
 
@@ -12,7 +13,10 @@ type AddProps = {
 const AddSaleOrderPage: FC<AddProps> = async ({ params }) => {
   const { companyId } = await params;
 
-  const clients = await fetchClients(companyId);
+  const [clients, products] = await Promise.all([
+    fetchClients(companyId),
+    fetchProducts(companyId),
+  ]);
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
@@ -32,7 +36,11 @@ const AddSaleOrderPage: FC<AddProps> = async ({ params }) => {
       </header>
 
       <section>
-        <CreateSaleOrderForm clients={clients} companyId={companyId} />
+        <CreateSaleOrderForm
+          clients={clients}
+          companyId={companyId}
+          products={products}
+        />
       </section>
     </main>
   );

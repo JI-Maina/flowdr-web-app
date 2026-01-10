@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Client } from "@/types/flowdr";
+import { Client, Product } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type CreateProps = { clients: Client[]; companyId: string };
+type CreateProps = {
+  clients: Client[];
+  companyId: string;
+  products: Product[];
+};
 
 export type SaleItem = {
   product_id: string;
@@ -88,8 +92,9 @@ const saleOrderSchema = z.object({
 export const CreateSaleOrderForm: FC<CreateProps> = ({
   clients,
   companyId,
+  products,
 }) => {
-  const { products, branches } = useFlowdrStore((state) => state.store);
+  const { branches } = useFlowdrStore((state) => state.store);
 
   const [orderItems, setOrderItems] = useState<SaleItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -485,6 +490,7 @@ export const CreateSaleOrderForm: FC<CreateProps> = ({
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
         existingItems={orderItems}
+        products={products}
       />
     </div>
   );

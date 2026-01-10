@@ -10,7 +10,7 @@ import { useFlowdrStore } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Package, Plus, Rotate3DIcon, Trash2 } from "lucide-react";
 
-import { Vendor } from "@/types/flowdr";
+import { Product, Vendor } from "@/types/flowdr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,6 +44,7 @@ import {
 type CreateProps = {
   vendors: Vendor[];
   companyId: string;
+  products: Product[];
 };
 
 export type RequisitionItem = {
@@ -70,9 +71,10 @@ const createProductSchema = z.object({
 export const CreateRequisitionOrderForm: FC<CreateProps> = ({
   vendors,
   companyId,
+  products,
 }) => {
   const branches = useFlowdrStore((state) => state.store.branches);
-  const products = useFlowdrStore((state) => state.store.products);
+  console.log(vendors);
 
   const [orderItems, setOrderItems] = useState<RequisitionItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -393,6 +395,7 @@ export const CreateRequisitionOrderForm: FC<CreateProps> = ({
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
         existingItems={orderItems}
+        products={products}
       />
     </div>
   );

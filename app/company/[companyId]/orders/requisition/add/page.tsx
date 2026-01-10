@@ -1,6 +1,8 @@
 import React, { FC } from "react";
 
+import { fetchVendors } from "@/data/users/get-users";
 import BackButton from "@/components/common/back-button";
+import { fetchProducts } from "@/data/product/get-products";
 import { CreateRequisitionOrderForm } from "@/components/orders/requisition/create-requisition";
 
 type Props = {
@@ -9,6 +11,11 @@ type Props = {
 
 const AddRequisitionPage: FC<Props> = async ({ params }) => {
   const { companyId } = await params;
+
+  const [vendors, products] = await Promise.all([
+    fetchVendors(companyId),
+    fetchProducts(companyId),
+  ]);
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
@@ -24,7 +31,11 @@ const AddRequisitionPage: FC<Props> = async ({ params }) => {
       </header>
 
       <section>
-        <CreateRequisitionOrderForm companyId={companyId} vendors={[]} />
+        <CreateRequisitionOrderForm
+          companyId={companyId}
+          vendors={vendors}
+          products={products}
+        />
       </section>
     </main>
   );
