@@ -24,11 +24,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface PurchaseItemsModalProps {
+interface RequisitionItemsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAddItem: (item: RequisitionItem) => void;
   existingItems: RequisitionItem[];
+  products: Product[];
 }
 
 export function RequisitionItemsModal({
@@ -36,8 +37,8 @@ export function RequisitionItemsModal({
   onOpenChange,
   onAddItem,
   existingItems,
-}: PurchaseItemsModalProps) {
-  const products = useFlowdrStore((state) => state.store.products);
+  products,
+}: RequisitionItemsModalProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [unitPrice, setUnitPrice] = useState("");

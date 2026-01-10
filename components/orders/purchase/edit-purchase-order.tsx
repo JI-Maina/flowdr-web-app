@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Vendor, PurchaseOrder } from "@/types/flowdr";
+import { Vendor, PurchaseOrder, Product } from "@/types/flowdr";
 import { PurchaseItemsModal } from "./purchase-items-modal";
 // import { updatePurchaseOrder } from "@/data/orders/update-orders";
 import { updatePurchaseOrder } from "@/data/orders/update-orders";
@@ -62,6 +62,7 @@ type EditProps = {
   vendors: Vendor[];
   companyId: string;
   order: PurchaseOrder; // The existing order data
+  products: Product[];
 };
 
 export type Item = {
@@ -95,9 +96,8 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
   vendors,
   companyId,
   order,
+  products,
 }) => {
-  const products = useFlowdrStore((state) => state.store.products);
-
   // Initialize with existing items
   const [orderItems, setOrderItems] = useState<Item[]>(() =>
     order.items.map((item) => ({
@@ -190,6 +190,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
       };
 
       const res = await updatePurchaseOrder(companyId, order.id, updatedOrder);
+      console.log(res);
 
       if (res.error === "0") {
         toast.success("Success", { description: "Order updated successfully" });
@@ -794,6 +795,7 @@ export const EditPurchaseOrderForm: FC<EditProps> = ({
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
         existingItems={orderItems}
+        products={products}
       />
     </div>
   );

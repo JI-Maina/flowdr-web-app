@@ -11,7 +11,7 @@ import { Minus, Package, Plus, Rotate3DIcon, Save, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { RequisitionOrder } from "@/types/flowdr";
+import { Product, RequisitionOrder } from "@/types/flowdr";
 import { Textarea } from "@/components/ui/textarea";
 import { RequisitionItem } from "./create-requisition";
 import { RequisitionItemsModal } from "./requisition-items-modal";
@@ -44,6 +44,7 @@ import {
 type EditProps = {
   companyId: string;
   order: RequisitionOrder;
+  products: Product[];
 };
 
 const status = ["PENDING", "APPROVED", "DENIED", "FULFILLED", "CANCELLED"];
@@ -58,8 +59,12 @@ const requisitionSchema = z.object({
   notes: z.string(),
 });
 
-const EditRequisitionOrderForm: FC<EditProps> = ({ companyId, order }) => {
-  const { products, branches } = useFlowdrStore((state) => state.store);
+const EditRequisitionOrderForm: FC<EditProps> = ({
+  companyId,
+  order,
+  products,
+}) => {
+  const { branches } = useFlowdrStore((state) => state.store);
 
   const [orderItems, setOrderItems] = useState<RequisitionItem[]>(() =>
     order.items.map((item) => ({
@@ -524,12 +529,13 @@ const EditRequisitionOrderForm: FC<EditProps> = ({ companyId, order }) => {
         </form>
       </Form>
 
-      {/* Items Modal */}
+      {/* Requisition Items Modal */}
       <RequisitionItemsModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
         existingItems={orderItems}
+        products={products}
       />
     </div>
   );

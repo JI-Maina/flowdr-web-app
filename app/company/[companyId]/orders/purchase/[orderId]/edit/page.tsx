@@ -5,6 +5,7 @@ import { fetchVendors } from "@/data/users/get-users";
 import BackButton from "@/components/common/back-button";
 import { fetchPurchaseOrder } from "@/data/orders/get-orders";
 import { EditPurchaseOrderForm } from "@/components/orders/purchase/edit-purchase-order";
+import { fetchProducts } from "@/data/product/get-products";
 
 type EditProps = {
   params: Promise<{ companyId: string; orderId: string }>;
@@ -13,9 +14,10 @@ type EditProps = {
 const EditPurchaseOrderPage: FC<EditProps> = async ({ params }) => {
   const { companyId, orderId } = await params;
 
-  const [order, vendors] = await Promise.all([
+  const [order, vendors, products] = await Promise.all([
     fetchPurchaseOrder(companyId, orderId),
     fetchVendors(companyId),
+    fetchProducts(companyId),
   ]);
 
   return (
@@ -40,6 +42,7 @@ const EditPurchaseOrderPage: FC<EditProps> = async ({ params }) => {
           companyId={companyId}
           order={order}
           vendors={vendors}
+          products={products}
         />
       </section>
     </main>

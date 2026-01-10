@@ -3,6 +3,7 @@ import React, { FC } from "react";
 import BackButton from "@/components/common/back-button";
 import { fetchRequisitionOrder } from "@/data/orders/get-orders";
 import EditRequisitionOrderForm from "@/components/orders/requisition/edit-requisition";
+import { fetchProducts } from "@/data/product/get-products";
 
 type EditProps = {
   params: Promise<{ orderId: string; companyId: string }>;
@@ -11,7 +12,10 @@ type EditProps = {
 const EditRequisitionOrderPage: FC<EditProps> = async ({ params }) => {
   const { companyId, orderId } = await params;
 
-  const order = await fetchRequisitionOrder(companyId, orderId);
+  const [order, products] = await Promise.all([
+    fetchRequisitionOrder(companyId, orderId),
+    fetchProducts(companyId),
+  ]);
 
   return (
     <main className="container mx-auto p-6 max-w-4xl">
@@ -27,7 +31,11 @@ const EditRequisitionOrderPage: FC<EditProps> = async ({ params }) => {
       </header>
 
       <section>
-        <EditRequisitionOrderForm companyId={companyId} order={order} />
+        <EditRequisitionOrderForm
+          companyId={companyId}
+          order={order}
+          products={products}
+        />
       </section>
     </main>
   );

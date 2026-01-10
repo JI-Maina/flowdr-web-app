@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useFlowdrStore } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { Client, SaleOrder } from "@/types/flowdr";
+import { Client, Product, SaleOrder } from "@/types/flowdr";
 import { Calendar } from "@/components/ui/calendar";
 import { SaleItemsModal } from "./sale-items-modal";
 import { updateSaleOrder } from "@/data/orders/update-orders";
@@ -64,6 +64,7 @@ type EditProps = {
   clients: Client[];
   companyId: string;
   order: SaleOrder;
+  products: Product[];
 };
 
 const status = [
@@ -92,8 +93,9 @@ export const EditSaleOrderForm: FC<EditProps> = ({
   clients,
   companyId,
   order,
+  products,
 }) => {
-  const { products, branches } = useFlowdrStore((state) => state.store);
+  const { branches } = useFlowdrStore((state) => state.store);
 
   const [orderItems, setOrderItems] = useState<SaleItem[]>(() =>
     order.items.map((item) => ({
@@ -556,6 +558,7 @@ export const EditSaleOrderForm: FC<EditProps> = ({
         onOpenChange={setIsModalOpen}
         onAddItem={addOrderItem}
         existingItems={orderItems}
+        products={products}
       />
     </div>
   );

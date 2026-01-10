@@ -29,6 +29,7 @@ interface PurchaseItemsModalProps {
   onOpenChange: (open: boolean) => void;
   onAddItem: (item: Item) => void;
   existingItems: Item[];
+  products: Product[];
 }
 
 export function PurchaseItemsModal({
@@ -36,8 +37,8 @@ export function PurchaseItemsModal({
   onOpenChange,
   onAddItem,
   existingItems,
+  products,
 }: PurchaseItemsModalProps) {
-  const products = useFlowdrStore((state) => state.store.products);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [unitPrice, setUnitPrice] = useState("");
