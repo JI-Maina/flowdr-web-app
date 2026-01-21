@@ -2,13 +2,14 @@ import "server-only";
 
 import { getToken } from "@/actions/auth-action";
 import { Company, Country, Currency } from "@/types/flowdr";
+import { serverFetch } from "@/lib/server-fetch";
 
 export const fetchCompany = async (): Promise<Company[]> => {
   try {
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(`${url}/api/companies/`, {
+    const res = await serverFetch(`${url}/api/companies/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +34,7 @@ export const fetchCountries = async (): Promise<Country[]> => {
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(`${url}/api/countries/`, {
+    const res = await serverFetch(`${url}/api/countries/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -58,7 +59,7 @@ export const fetchCurrencies = async (): Promise<Currency[]> => {
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(`${url}/api/currencies/`, {
+    const res = await serverFetch(`${url}/api/currencies/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

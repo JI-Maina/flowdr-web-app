@@ -2,6 +2,7 @@
 
 import { getToken } from "@/actions/auth-action";
 import { PurchaseOrder, RequisitionOrder, SaleOrder } from "@/types/flowdr";
+import { serverFetch } from "@/lib/server-fetch";
 
 export const fetchPurchaseOrders = async (
   id: string
@@ -10,7 +11,7 @@ export const fetchPurchaseOrders = async (
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(`${url}/api/companies/${id}/purchase-orders/`, {
+    const res = await serverFetch(`${url}/api/companies/${id}/purchase-orders/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +41,7 @@ export const fetchPurchaseOrder = async (
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(
+    const res = await serverFetch(
       `${url}/api/companies/${id}/purchase-orders/${orderId}`,
       {
         method: "GET",
@@ -70,7 +71,7 @@ export const fetchSaleOrders = async (id: string): Promise<SaleOrder[]> => {
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(`${url}/api/branches/${id}/sale-orders/`, {
+    const res = await serverFetch(`${url}/api/branches/${id}/sale-orders/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +99,7 @@ export const fetchSaleOrder = async (
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(
+    const res = await serverFetch(
       `${url}/api/branches/${branchId}/sale-orders/${id}/`,
       {
         method: "GET",
@@ -128,7 +129,7 @@ export const fetchRequisitionOrders = async (
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(`${url}/api/companies/${id}/requisition-orders/`, {
+    const res = await serverFetch(`${url}/api/companies/${id}/requisition-orders/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -158,7 +159,7 @@ export const fetchRequisitionOrder = async (
     const token = await getToken();
     const url = process.env.NEXT_PUBLIC_API_HOST;
 
-    const res = await fetch(
+    const res = await serverFetch(
       `${url}/api/companies/${branchId}/requisition-orders/${id}/`,
       {
         method: "GET",

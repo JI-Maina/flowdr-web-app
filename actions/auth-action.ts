@@ -4,11 +4,12 @@ import { z } from "zod";
 
 import { loginSchema, regSchema } from "@/lib/schemas";
 import { cookies } from "next/headers";
+import { serverFetch } from "@/lib/server-fetch";
 
 export async function registerUser(values: z.infer<typeof regSchema>) {
   const url = process.env.NEXT_PUBLIC_API_HOST;
 
-  const res = await fetch(`${url}/auth/register/`, {
+  const res = await serverFetch(`${url}/auth/register/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -27,7 +28,7 @@ export async function registerUser(values: z.infer<typeof regSchema>) {
 export async function loginUser(values: z.infer<typeof loginSchema>) {
   const url = process.env.NEXT_PUBLIC_API_HOST;
 
-  const res = await fetch(`${url}/auth/login/`, {
+  const res = await serverFetch(`${url}/auth/login/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(values),
